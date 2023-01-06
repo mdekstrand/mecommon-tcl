@@ -45,5 +45,26 @@ namespace eval ::plat {
         return $cache(arch)
     }
 
-    namespace export tag os arch
+    proc is {args} {
+        set result 1
+        foreach arg $args {
+            switch -glob -- $arg {
+                windows {
+                    set result [expr $result && [string equal [os] "windows"]]
+                }
+                -* {
+                    set query [string range $arg 1 end]
+                    set sr [is $query]
+                    set result [expr $result && !$sr]
+                }
+                default {
+                    error "unknown query $flag"
+                }
+            }
+        }
+
+        return $result
+    }
+
+    namespace export tag os arch is
 }

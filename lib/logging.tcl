@@ -40,6 +40,9 @@ proc msg {code args} {
         -success {
             set fmt [ansi::fmt -fg green]
         }
+        -result {
+            set fmt [ansi::fmt -reset]
+        }
         -* {
             set level [string range $code 1 end]
         }
