@@ -17,7 +17,12 @@ namespace eval ::plat {
 
     proc os {} {
         global tcl_platform
-        return [string tolower $tcl_platform(os)]
+        set plat [string tolower $tcl_platform(os)]
+        if {[regexp {^m(sys|ingw\d+)_nt-*} $plat]} {
+            set plat windows
+        }
+
+        return $plat
     }
 
     proc arch {} {
