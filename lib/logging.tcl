@@ -18,16 +18,37 @@ namespace eval logging {
     set lvl_format(info) {[ansi::fmt -bold -fg blue]MSG:[ansi::fmt -fg default] $msg[ansi::fmt -reset]}
     set lvl_format(warn) {[ansi::fmt -bold -fg yellow]WRN: $msg[ansi::fmt -reset]}
     set lvl_format(error) {[ansi::fmt -bold -fg red]ERR: $msg[ansi::fmt -reset]}
+
+    proc configure {flag} {
+        variable verbose
+        switch -- $flag {
+            -verbose {
+                set verbose 1
+            }
+            -quiet {
+                set verbose -1
+            }
+        }
+    }
 }
 
-proc msg {args} {
+proc msg {code args} {
     set level info
-    set msg [lindex $args 0]
+    set fmt ""
     # check for a level argument
-    if {[regexp {^-([a-z]+)} $msg -> flag]} {
-        set level $flag
-        set msg [lindex $args 1]
+    switch -glob -- $code {
+        -success {
+            set fmt [ansi::fmt -fg green]
+        }
+        -* {
+            set level [string range $code 1 end]
+        }
+        default {
+            set args [linsert $args 0 $code]
+        }
     }
+
+    set msg "$fmt[join $args]"
 
     if {[info exists ::logging::lvl_alias($level)]} {
         set level $::logging::lvl_alias($level)
