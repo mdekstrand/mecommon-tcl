@@ -9,6 +9,7 @@
 # full path name of this file's directory.
 
 package ifneeded ansifmt 0.1 [list source [file join $dir ansifmt.tcl]]
+package ifneeded getopt 2008.12.07 [list source [file join $dir getopt.tcl]]
 package ifneeded logging 0.1 [list source [file join $dir logging.tcl]]
 package ifneeded missing 1.0 [list source [file join $dir missing.tcl]]
 package ifneeded platinfo 0.1 [list source [file join $dir platinfo.tcl]]

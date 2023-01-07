@@ -28,6 +28,9 @@ namespace eval logging {
             -quiet {
                 set verbose -1
             }
+            default {
+                error "unrecognized option $flag"
+            }
         }
     }
 }
