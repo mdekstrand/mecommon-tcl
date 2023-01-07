@@ -3,8 +3,6 @@
 package require logging
 package require getopt
 
-msg [lsort [info commands]]
-
 logging::configure -verbose
 msg "parsing arguments: $argv"
 
@@ -13,6 +11,10 @@ getopt arg $argv {
         # print usage help and exit
         msg "received --help"
         help
+    }
+    -x: - --extended:ARG {
+        # extended property ARG
+        msg "ext $arg"
     }
     missing {
         msg -err "no value found for $arg"

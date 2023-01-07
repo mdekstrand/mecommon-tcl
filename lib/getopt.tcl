@@ -1,9 +1,11 @@
 # getopt.tcl --
 #
 #   Parse command-line arguments in a conventional Unix/GNU style.
-#   Written by sbron and posted on the TCL Wiki.
+#   Copyright (c) 2008 Schelte Bron (sbron).
 #   Retrieved from <https://wiki.tcl-lang.org/page/alternative+getopt>.
 #   Licensed under the TCL license.
+#
+#   Modified 2023 by Michael Ekstrand for Jim TCL compatibility.
 package provide getopt 2008.12.07
 
 namespace eval getopt {
@@ -24,9 +26,6 @@ proc getopt::getopt {args} {
     set arg(missing) [dict create pattern missing argument 0]
     set arg(unknown) [dict create pattern unknown argument 0]
     set arg(argument) [dict create pattern argument argument 0]
-    if {[llength [info commands ::help]] == 0} {
-        interp alias {} ::help {} return -code 99 -level 0
-    }
     lappend defaults --help "# display this help and exit\nhelp" \
       arglist #\n[format {getopt::noargs ${%s}} $argvar] \
       missing [format {getopt::missing ${%s}} $argvar] \
@@ -163,8 +162,11 @@ proc getopt::nfound {body option} {
 proc getopt::comment {code} {
     set lines [split $code \n]
     if {[set x1 [lsearch -regexp -not $lines {^\s*$}]] < 0} {set x1 0}
-    if {[set x2 [lsearch -start $x1 -regexp -not $lines {^\s*#}]] < 0} {
+    set tail [lrange $lines $x1 end]
+    if {[set x2 [lsearch -regexp -not $tail {^\s*#}]] < 0} {
         set x2 [llength $lines]
+    } else {
+        incr x2 $x1
     }
     for {set rc "";set i $x1} {$i < $x2} {incr i} {
         lappend rc [regsub {^\s*#\s?} [lindex $lines $i] {}]
@@ -217,7 +219,9 @@ proc getopt::help {body} {
             set str "      "
         }
         append str [join $long {, }] " "
-        set tab [expr {max($tab, [string length $str])}]
+        if {$tab < [string length $str]} {
+            set tab [string length $str]
+        }
         foreach line $lines {
             lappend out $str $line
             set str ""
@@ -249,4 +253,9 @@ proc getopt::help {body} {
     exit 1
 }
 
-namespace import getopt::*
+namespace import getopt::getopt
+# this is ugly but best we can do cross-engine
+# TODO find another way to signal need for help
+proc help {} {
+    return -code 99 -level 1
+}
