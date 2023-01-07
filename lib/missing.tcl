@@ -25,3 +25,12 @@ proc lshift {listVar} {
 proc lempty {list} {
     return [expr {[llength $list] == 0}]
 }
+
+# exists --
+#
+#   A Jim-compatible 'exists' procedure for stock Tcl.  Only tests variables.
+if {"exists" ni [info vars]} {
+    proc exists {var} {
+        return [info exists $var]
+    }
+}
