@@ -8,8 +8,8 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded ansifmt 0.1 [list source [file join $dir lib/ansifmt.tcl]]
-package ifneeded logging 0.1 [list source [file join $dir lib/logging.tcl]]
-package ifneeded missing 1.0 [list source [file join $dir lib/missing.tcl]]
-package ifneeded platinfo 0.1 [list source [file join $dir lib/platinfo.tcl]]
-package ifneeded runprog 1.0 [list source [file join $dir lib/runprog.tcl]]
+package ifneeded ansifmt 0.1 [list source [file join $dir ansifmt.tcl]]
+package ifneeded logging 0.1 [list source [file join $dir logging.tcl]]
+package ifneeded missing 1.0 [list source [file join $dir missing.tcl]]
+package ifneeded platinfo 0.1 [list source [file join $dir platinfo.tcl]]
+package ifneeded runprog 1.0 [list source [file join $dir runprog.tcl]]

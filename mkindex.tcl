@@ -8,5 +8,5 @@ if {[llength $argv]} {
     set dir [file dirname [info script]]
     puts "indexing common lib at $dir"
     cd $dir
-    pkg_mkIndex -verbose . lib/*.tcl
+    pkg_mkIndex -verbose lib *.tcl
 }
