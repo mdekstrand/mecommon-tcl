@@ -28,8 +28,7 @@ proc lempty {list} {
 
 # exists --
 #
-#   A Jim-like 'exists' procedure for stock Tcl.  Only tests variables.
-
+#   A Jim-like 'exists' procedure for core Tcl.  Only tests variables for now.
 if {"exists" ni [info commands]} {
     proc exists {var} {
         return [info exists $var]
