@@ -39,6 +39,7 @@ proc run {args} {
         # something failed
         if {[string equal $fail_action return]} {
             set details [dict get $retopts -errorcode]
+            msg -debug "[lpeek $args]: failed with $details"
             set errcode [lpeek $details]
             if {[string equal $errcode CHILDSTATUS]} {
                 set exit [lindex $details 2]
