@@ -3,12 +3,27 @@
 #   This package provides routines that support running external programs.
 package provide runprog 1.0
 package require logging
+package require missing
 
 proc run {args} {
     set out @stdout
-    if {[string equal [lindex $args 0] -noout]} {
-        set out /dev/null
-        lshift args
+    set done 0
+    set fail_action error
+    while {!$done} {
+        set arg [lpeek $args]
+        switch -- $arg {
+            -noout {
+                set out /dev/null
+                lshift args
+            }
+            -retfail {
+                set fail_action return
+                lshift args
+            }
+            default {
+                break
+            }
+        }
     }
 
     set disp $args
@@ -17,5 +32,24 @@ proc run {args} {
         lappend disp "..."
     }
     msg -debug "running command: $disp"
-    exec {*}$args >$out 2>@stderr
+    set status [catch {
+        exec {*}$args >$out 2>@stderr
+    } retval retopts]
+    if {$status} {
+        # something failed
+        if {[string equal $fail_action return]} {
+            set details [dict get $retopts -errorcode]
+            set errcode [lpeek $details]
+            if {[string equal $errcode CHILDSTATUS]} {
+                set exit [lindex $details 2]
+                msg -debug "terminated with code $exit"
+                return $exit
+            }
+        }
+
+        # no error to return
+        return {*}$retopts $retval
+    } else {
+        return 0
+    }
 }

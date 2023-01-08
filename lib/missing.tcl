@@ -1,6 +1,7 @@
 # missing.tcl --
 #
-#   Polyfills for missing functionality TCL or JimTcl should arguably have.
+#   Polyfills for missing functionality TCL or JimTcl should arguably have, and very small
+#   add-on procedures.
 package provide missing 1.0
 
 # lshift --
@@ -24,6 +25,13 @@ proc lshift {listVar} {
 #   Query whether a list is empty.
 proc lempty {list} {
     return [expr {[llength $list] == 0}]
+}
+
+# lpeek --
+#
+#   Peek the front element of a list.
+proc lpeek {list} {
+return [lindex $list 0]
 }
 
 # exists --
