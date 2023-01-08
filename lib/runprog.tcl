@@ -16,14 +16,27 @@ proc run {args} {
                 set out /dev/null
                 lshift args
             }
+            -outfile {
+                lshift args
+                set out [lshift args]
+            }
             -retfail {
                 set fail_action return
                 lshift args
+            }
+            -cwd {
+                lshift args
+                set cwd [lshift args]
             }
             default {
                 break
             }
         }
+    }
+
+    if {[info exists cwd]} {
+        set oldwd [pwd]
+        cd $cwd
     }
 
     set disp $args
@@ -35,6 +48,9 @@ proc run {args} {
     set status [catch {
         exec {*}$args >$out 2>@stderr
     } retval retopts]
+    if {[info exists cwd]} {
+        cd $oldwd
+    }
     if {$status} {
         # something failed
         if {[string equal $fail_action return]} {
