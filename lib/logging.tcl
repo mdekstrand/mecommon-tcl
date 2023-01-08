@@ -28,6 +28,21 @@ namespace eval logging {
         return "[ansi::fmt -bold -fg red]ERR: $msg[ansi::fmt -reset]"
     }
 
+    proc verb_level {{v current}} {
+        variable lvl_verb
+        variable verbose
+        if {[string equal $v current]} {
+            set v $verbose
+        }
+        foreach name [array names lvl_verb] {
+            if {$lvl_verb($name) == $v} {
+                return $name
+            }
+        }
+
+        return "unknown"
+    }
+
     proc configure {flag {arg ""}} {
         variable verbose
         variable lvl_verb
