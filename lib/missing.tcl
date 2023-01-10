@@ -136,7 +136,7 @@ proc kvlookup {args} {
 #
 #   read a file.
 proc read_file {path} {
-    set fp [open path r]
+    set fp [open $path r]
     catch {
         read $fp
     } res opts
