@@ -132,6 +132,18 @@ proc kvlookup {args} {
     }
 }
 
+# read_file --
+#
+#   read a file.
+proc read_file {path} {
+    set fp [open path r]
+    catch {
+        read $fp
+    } res opts
+    close $fp
+    return {*}$opts $res
+}
+
 # exists --
 #
 #   A Jim-like 'exists' procedure for core Tcl.  Only tests variables for now.
