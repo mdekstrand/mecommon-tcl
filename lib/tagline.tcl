@@ -11,9 +11,11 @@ proc tagline {cmd args} {
             if {![lempty $args]} {
                 error "too many arguments"
             }
-            set line [string trim line]
-            if {[regexp {^([A-Z0-9-]+)\s*\\(([^\)]+)\\)\s*=\s*(.*)} $line -> tag subject value]} {
+            set line [string trim $line]
+            if {[regexp {^([A-Z0-9-]+)\s*\(([^)]+)\)\s*=\s*(.*)} $line -> tag subject value]} {
                 return [list $subject $tag $value]
+            } else {
+                error "invalid tagline: $line"
             }
         }
         unparse {
