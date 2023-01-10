@@ -36,6 +36,7 @@ proc run {args} {
 
     if {[info exists cwd]} {
         set oldwd [pwd]
+        msg -debug "entering directory $cwd"
         cd $cwd
     }
 
@@ -49,6 +50,7 @@ proc run {args} {
         exec {*}$args >$out 2>@stderr
     } retval retopts]
     if {[info exists cwd]} {
+        msg -debug "restoring working directory"
         cd $oldwd
     }
     if {$status} {
