@@ -1,0 +1,37 @@
+package require tcltest 2.0
+namespace import tcltest::*
+
+package require kvlookup
+
+test kvl-dict-value {lookup in dictionary value} {
+    kvlookup {
+        foo red
+        bar blue
+    } bar
+} blue
+
+test kvl-dict-var {lookup in dictionary var} {
+    set data {
+        apple purple
+        grape yellow
+    }
+    kvlookup -var data apple
+} purple
+
+test kvl-array-var {lookup in array with -var} {
+    set ada1(apple) purple
+    set ada1(grape) yellow
+    kvlookup -var ada1 apple
+} purple
+
+test kvl-array {lookup in array} {
+    set ada2(apple) purple
+    set ada2(grape) yellow
+    kvlookup -array ada2 apple
+} purple
+
+test kvl-array-missing {lookup in array} -body {
+    set ada3(apple) purple
+    set ada3(grape) yellow
+    kvlookup -array ada3 orange
+} -returnCodes error -result "array ada3 has no key orange"

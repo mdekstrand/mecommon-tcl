@@ -32,17 +32,9 @@ It does not fail on an empty list.
 
 `lpeek list` returns the first element of the list *without* removing it.
 
-## kvlookup
+## Info Routines
 
-The `kvlookup` routine provides flexible lookup for keys in key-value structures
-like arrays and dictionaries.
+### exists
 
-> **kvlookup** ?-default *default*? (-array *var* | -var *var* | *dict*) *key*
-
-The options are as follows:
-
-- `-default` *default* — return the value *default* instead of an error if the key is not found.
-- `-array` *var* — look up in the array named *var*.
-- `-var` *var* — look up in the dictionary or array (auto-detected) at `$var`.
-- *dict* — look up in the provided dictionary value.
-- *key* — the key to retrieve.
+The `exists` routine is a mostly-compatible polyfill to provide Jim's `exists`
+command on Tcl.
