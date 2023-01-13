@@ -7,6 +7,7 @@ namespace eval logging {
     variable verbose 0
 
     variable lvl_verb
+    set lvl_verb(trace) 2
     set lvl_verb(debug) 1
     set lvl_verb(info) 0
     set lvl_verb(warn) -1
@@ -15,8 +16,11 @@ namespace eval logging {
     variable lvl_alias
     set lvl_alias(err) error
 
+    proc fmt_trace {msg} {
+        return "[ansi::fmt -dim]TRC:[ansi::fmt -reset] $msg"
+    }
     proc fmt_debug {msg} {
-        return "[ansi::fmt -dim]DBG: $msg[ansi::fmt -reset]"
+        return "[ansi::fmt -fg cyan]DBG: $msg[ansi::fmt -reset]"
     }
     proc fmt_info {msg} {
         return "[ansi::fmt -bold -fg blue]MSG:[ansi::fmt -fg default] $msg[ansi::fmt -reset]"
@@ -48,10 +52,10 @@ namespace eval logging {
         variable lvl_verb
         switch -- $flag {
             -verbose {
-                set verbose 1
+                incr verbose
             }
             -quiet {
-                set verbose -1
+                incr verbose -1
             }
             -level {
                 set verbose $lvl_verb($arg)
