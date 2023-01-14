@@ -10,7 +10,7 @@ namespace eval oscmd {}
 proc oscmd::locate {name} {
     msg -trace "asking which for $name"
     set failed [catch {
-        exec which $name 2>/dev/null
+        exec which $name
     } rval ropts]
 
     # did we succeed?
@@ -58,10 +58,10 @@ proc oscmd::locate {name} {
 }
 
 proc oscmd::exists {name} {
-    set success [catch {
+    set failed [catch {
         locate $name
     } rv opts]
-    if {$success} {
+    if {!$failed} {
         return 1
     } elseif {[dict get $opts -errorcode] eq {OSCMD NOTFOUND}} {
         return 0
