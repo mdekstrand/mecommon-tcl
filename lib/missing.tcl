@@ -22,12 +22,12 @@ proc lshift {listVar} {
 
 # lunshift --
 #   Push a value onto the front of a list.
-proc lunshift {listVar val} {
+proc lunshift {listVar args} {
     upvar 1 $listVar list
     if {![info exists list]} {
         error "lunshift: variable $listVar does not exist"
     }
-    set list [linsert $list 0 $val]
+    set list [linsert $list 0 {*}$args]
 }
 
 # lempty --

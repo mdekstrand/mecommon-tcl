@@ -23,7 +23,7 @@ namespace eval logging {
         return "[ansi::fmt -fg cyan]DBG: $msg[ansi::fmt -reset]"
     }
     proc fmt_info {msg} {
-        return "[ansi::fmt -bold -fg blue]MSG:[ansi::fmt -fg default] $msg[ansi::fmt -reset]"
+        return "[ansi::fmt -bold -fg blue]MSG:[ansi::fmt -reset] $msg[ansi::fmt -reset]"
     }
     proc fmt_warn {msg} {
         return "[ansi::fmt -bold -fg yellow]WRN: $msg[ansi::fmt -reset]"
@@ -76,20 +76,44 @@ namespace eval logging {
         # check for a level argument
         switch -glob -- $code {
             -success {
-                set fmt [ansi::fmt -fg green]
+                lunshift args -bold -fg green
             }
             -result {
-                set fmt [ansi::fmt -reset]
             }
             -* {
                 set level [string range $code 1 end]
             }
             default {
-                set args [linsert $args 0 $code]
+                lunshift args $code
             }
         }
 
-        set msg "$fmt[join $args]"
+        set msg ""
+        set codes {}
+        while {![lempty $args]} {
+            set arg [lshift args]
+            switch -- "$arg" {
+                -fg -
+                -bg {
+                    lappend codes $arg [lshift args]
+                }
+                -bold -
+                -dim -
+                -reset {
+                    lappend codes $arg
+                }
+                default {
+                    if {$msg ne ""} {
+                        append msg " "
+                    }
+                    if {![lempty $codes]} {
+                        append msg [ansi::fmt {*}$codes]
+                        set codes {}
+                    }
+                    append msg $arg
+                }
+            }
+        }
 
         if {[info exists lvl_alias($level)]} {
             set level $lvl_alias($level)
