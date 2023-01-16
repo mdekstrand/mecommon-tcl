@@ -88,6 +88,18 @@ namespace eval logging {
             }
         }
 
+        if {[info exists lvl_alias($level)]} {
+            set level $lvl_alias($level)
+        }
+
+        if {![info exists lvl_verb($level)]} {
+            return -code error -errorcode bad-level "invalid logging level $level"
+        }
+
+        if {$lvl_verb($level) > $verbose} {
+            return
+        }
+
         set msg ""
         set codes {}
         while {![lempty $args]} {
@@ -115,18 +127,8 @@ namespace eval logging {
             }
         }
 
-        if {[info exists lvl_alias($level)]} {
-            set level $lvl_alias($level)
-        }
-
-        if {![info exists lvl_verb($level)]} {
-            return -code error -errorcode bad-level "invalid logging level $level"
-        }
-
-        if {$lvl_verb($level) <= $verbose} {
-            set fmt_proc "fmt_$level"
-            puts stderr [$fmt_proc $msg]
-        }
+        set fmt_proc "fmt_$level"
+        puts stderr [$fmt_proc $msg]
     }
 }
 
