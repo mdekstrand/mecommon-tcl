@@ -120,6 +120,7 @@ proc oscmd::run {args} {
     }
     if {$status} {
         # something failed
+        msg -debug "exec failed: $retval"
         if {[string equal $fail_action return]} {
             set details [dict get $retopts -errorcode]
             msg -debug "[lpeek $args]: failed with $details"
@@ -134,6 +135,7 @@ proc oscmd::run {args} {
         # no error to return
         return {*}$retopts $retval
     } else {
+        msg -debug "exec ok"
         return 0
     }
 }
