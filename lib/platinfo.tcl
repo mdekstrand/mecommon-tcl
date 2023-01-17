@@ -19,6 +19,8 @@ namespace eval ::plat {
         global tcl_platform
         if {$tcl_platform(platform) eq "windows"} {
             set plat windows
+        } elseif {[regexp "^M(INGW|SYS2)" $tcl_platform(os)]} {
+            set plat windows
         } else {
             set plat [string tolower $tcl_platform(os)]
         }
@@ -51,12 +53,27 @@ namespace eval ::plat {
         return $cache(arch)
     }
 
+    proc flavor {} {
+        global tcl_platform
+        if {$tcl_platform(platform) eq "windows"} {
+            return windows
+        } elseif {[regexp "^M(INGW|SYS2)" $tcl_platform(os)]} {
+            return msys2
+        } else {
+            return [string tolower $tcl_platform(platform)]
+        }
+    }
+
     proc is {args} {
         set result 1
         foreach arg $args {
             switch -glob -- $arg {
                 windows {
-                    set result [expr $result && [string equal [os] "windows"]]
+                    set result [expr {$result && [os] eq "windows"}]
+                }
+                unix {
+                    # msys2 is both windows and unix
+                    set result [expr $result && [flavor] in {unix msys2}]
                 }
                 -* {
                     set query [string range $arg 1 end]
