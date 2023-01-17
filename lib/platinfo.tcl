@@ -33,8 +33,21 @@ namespace eval ::plat {
         variable cache
         if {![info exists cache(arch)]} {
             if {[info exists tcl_platform(machine)]} {
-                msg -debug "retrieving arch from \$tcl_platform(machine)"
+                msg -debug "retrieving arch from \$tcl_platform(machine) = $tcl_platform(machine)"
                 set cache(arch) $tcl_platform(machine)
+                # normalize architectures reported.
+                # note: we do *not* normalize arm64 to aarch64, since platforms are pretty
+                # consistent in their use of one or the other.
+                switch -- $cache(arch) {
+                    intel {
+                        msg -debug "resolving intel to i686"
+                        set cache(arch) i686
+                    }
+                    amd64 {
+                        msg -debug "normalizing amd64 to x86_64"
+                        set cache(arch) x86_64
+                    }
+                }
             } else {
                 # no machine in tcl_platform, we're probably on jim
                 # let's try to get it from the 'arch' command
