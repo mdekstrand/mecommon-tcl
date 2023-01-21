@@ -86,7 +86,7 @@ namespace eval ::plat {
                 }
                 unix {
                     # msys2 is both windows and unix
-                    set result [expr $result && [flavor] in {unix msys2}]
+                    set result [expr {$result && [flavor] in {unix msys2}}]
                 }
                 -* {
                     set query [string range $arg 1 end]
