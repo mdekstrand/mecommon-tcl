@@ -44,6 +44,20 @@ proc lpeek {list} {
     return [lindex $list 0]
 }
 
+# luniq --
+#
+#   Get the unique elements of a list.
+proc luniq {list} {
+    set result [list]
+    foreach e $list {
+        if {![info exists found($e)]} {
+            lappend result $e
+            set found($e) 1
+        }
+    }
+    return $result
+}
+
 # read_file --
 #
 #   read a file.

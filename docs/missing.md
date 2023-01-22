@@ -32,6 +32,11 @@ It does not fail on an empty list.
 
 `lpeek list` returns the first element of the list *without* removing it.
 
+### luniq
+
+`luniq list` returns the unique elements of `list`.  Order is preserved — each element is
+returned the *first* time it appears in `list`, and subsequent occurrences are skipped.
+
 ## Info Routines
 
 ### exists
