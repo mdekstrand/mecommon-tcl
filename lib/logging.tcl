@@ -73,6 +73,7 @@ namespace eval logging {
 
         set level info
         set fmt ""
+        set tag ""
         # check for a level argument
         switch -glob -- $code {
             -success {
@@ -129,6 +130,25 @@ namespace eval logging {
 
         set fmt_proc "fmt_$level"
         puts stderr [$fmt_proc $msg]
+    }
+
+    proc ns_msg {ns {tag ""}} {
+        if {$tag eq ""} {
+            set tag $ns
+        }
+        set "::${ns}::_log_tag" "$tag:"
+
+        uplevel #0 [list proc "::${ns}::msg" {code args} {
+            variable _log_tag
+            set dargs [list $_log_tag]
+            if {[string match -* $code]} {
+                set dargs [linsert $dargs 0 $code]
+            } else {
+                lappend dargs $code
+            }
+            lappend dargs {*}$args
+            ::logging::msg {*}$dargs
+        }]
     }
 }
 
