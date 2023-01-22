@@ -101,7 +101,7 @@ proc oscmd::run {args} {
 
     if {[info exists cwd]} {
         set oldwd [pwd]
-        msg -debug "entering directory $cwd"
+        msg -debug "oscmd: entering directory $cwd"
         cd $cwd
     }
 
@@ -110,20 +110,20 @@ proc oscmd::run {args} {
         set disp [lrange $disp 0 9]
         lappend disp "..."
     }
-    msg -debug "running command: $disp"
+    msg -debug "oscmd: running command: $disp"
     set status [catch {
         exec {*}$args >$out 2>@stderr
     } retval retopts]
     if {[info exists cwd]} {
-        msg -debug "restoring working directory"
+        msg -debug "oscmd: restoring working directory"
         cd $oldwd
     }
     if {$status} {
         # something failed
-        msg -debug "exec failed: $retval"
+        msg -debug "oscmd: exec" -fg red failed: $retval
         if {[string equal $fail_action return]} {
             set details [dict get $retopts -errorcode]
-            msg -debug "[lpeek $args]: failed with $details"
+            msg -debug "oscmd [lpeek $args]: failed with $details"
             set errcode [lpeek $details]
             if {[string equal $errcode CHILDSTATUS]} {
                 set exit [lindex $details 2]
@@ -135,7 +135,7 @@ proc oscmd::run {args} {
         # no error to return
         return {*}$retopts $retval
     } else {
-        msg -debug "exec ok"
+        msg -debug "oscmd exec" -fg green ok
         return 0
     }
 }
