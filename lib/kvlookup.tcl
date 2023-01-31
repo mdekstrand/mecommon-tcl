@@ -49,9 +49,6 @@ proc kvlookup {args} {
     if {[info exists var]} {
         # yes - alias it for further use
         upvar 1 $var kvv
-        if {![info exists kvv]} {
-            error "kv variable $var does not exist"
-        }
         # and detect its mode if necessary
         if {$mode eq "auto"} {
             if {$have_array && [array exists kvv]} {
