@@ -41,5 +41,11 @@ returned the *first* time it appears in `list`, and subsequent occurrences are s
 
 ### exists
 
-The `exists` routine is a mostly-compatible polyfill to provide Jim's `exists`
+The `exists` procedure is a mostly-compatible polyfill to provide Jim's `exists`
 command on Tcl.
+
+## I/O routines
+
+### read_file
+
+The `read_file` procedure reads the contents of a file.
