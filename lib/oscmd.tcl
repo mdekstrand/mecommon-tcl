@@ -71,7 +71,7 @@ proc oscmd::exists {name} {
     }
 }
 
-proc oscmd::run {args} {
+proc oscmd::run args {
     set out @stdout
     set done 0
     set fail_action error
@@ -95,7 +95,7 @@ proc oscmd::run {args} {
                 set cwd [lshift args]
             }
             default {
-                break
+                set done 1
             }
         }
     }
@@ -112,6 +112,9 @@ proc oscmd::run {args} {
         lappend disp "..."
     }
     msg -debug "running command: $disp"
+    foreach arg $args {
+        msg -trace "arg: $arg"
+    }
     set status [catch {
         exec {*}$args >$out 2>@stderr
     } retval retopts]
@@ -142,5 +145,5 @@ proc oscmd::run {args} {
 }
 
 proc oscmd {name args} {
-    uplevel 1 "oscmd::$name" {*}$args
+    "oscmd::$name" {*}$args
 }
