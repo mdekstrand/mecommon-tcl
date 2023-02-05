@@ -15,7 +15,7 @@ The options are as follows:
 
 - `-default` *default* — return the value *default* instead of an error if the key is not found.
 - `-array` *var* — look up in the array named *var*.
-- `-var` *var* — look up in the dictionary or array (auto-detected) at `$var`.
+- `-var` *var* — look up in the dictionary or array (auto-detected) named *var*.
 - *dict* — look up in the provided dictionary value.
 - *key* — the key to retrieve.
 
