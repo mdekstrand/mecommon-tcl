@@ -1,0 +1,13 @@
+source [file dirname [info script]]/testing.tcl
+
+package require uri
+
+test uri-encode {encode ascii uri} {
+    uri encode fish
+} {fish}
+
+test uri-encode {encode uri with spence} {
+    uri encode "flying fish"
+} {flying%20fish}
+
+testreport
