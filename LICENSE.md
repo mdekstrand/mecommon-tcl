@@ -21,7 +21,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## TCL Wiki License
+## TCL Wiki and Tcllib License
 
 Some routines and files are from the TCL Wiki, under the following license:
 
@@ -60,3 +60,10 @@ Some routines and files are from the TCL Wiki, under the following license:
 > the foregoing, the authors grant the U.S. Government and others acting in its
 > behalf permission to use and distribute the software in accordance with the
 > terms specified in this license. 
+
+Some files are from [Tcllib](https://www.tcl.tk/software/tcllib/), under the
+same license with the following copyright in the first paragraph:
+
+> This software is copyrighted by Ajuba Solutions and other parties.
+> The following terms apply to all files associated with the software
+> unless explicitly disclaimed in individual files.
