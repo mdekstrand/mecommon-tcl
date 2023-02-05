@@ -76,6 +76,7 @@ proc read_file {path} {
 if {"exists" ni [info commands]} {
     proc exists {name args} {
         set mode var
+        set nsfilt ""
         if {[string match $name* -var]} {
             set name [lshift args]
         } elseif {[string match $name* -proc]} {
@@ -94,10 +95,12 @@ if {"exists" ni [info commands]} {
                 return [uplevel 1 info exists $name]
             }
             proc {
-                return [expr {"$name" in [uplevel 1 info procs]}]
+                set list [uplevel 1 info procs $name]
+                return [expr {[llength $list] > 0}]
             }
             cmd {
-                return [expr {"$name" in [uplevel 1 info commands]}]
+                set list [uplevel 1 info commands $name]
+                return [expr {[llength $list] > 0}]
             }
             alias {
                 error "exists -alias not yet supported"
