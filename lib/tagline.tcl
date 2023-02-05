@@ -1,7 +1,7 @@
 # Support for "tagged lines", like BSD hash tool output. These are of the form:
 # TAG(SUBJECT)= VALUE
 # Once parsed, taglines are represented as a list: {SUBJECT TAG VALUE}
-package provide tagline 1.0
+package provide tagline 0.1
 package require missing
 
 proc tagline {cmd args} {
