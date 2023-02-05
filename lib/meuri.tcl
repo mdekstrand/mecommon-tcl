@@ -80,19 +80,49 @@ proc uri::unparse {parts} {
     return $uri
 }
 
-proc uri::encode {data} {
-    set n [string length $data]
-    set string ""
-    for {set i 0} {$i < $n} {incr i} {
-        set char [string index $data $i]
-        if {[string is alnum $char] || $char in {- _ . ~}} {
-            append string $char
-        } else {
-            set cno [scan $char %c]
-            append string [format "%%%02x" $cno]
+proc uri::encode {args} {
+    set encslash 1
+    while {![lempty args]} {
+        set arg [lpeek $args]
+        switch -- $arg {
+            -path {
+                set encslash 0
+                lshift args
+            }
+            -- {
+                lshift args
+                break
+            }
+            -* {
+                error "unknown option $arg"
+            }
+            default {
+                break
+            }
         }
     }
-    return $string
+
+    set results [list]
+    foreach data $args {
+        set n [string length $data]
+        set string ""
+        for {set i 0} {$i < $n} {incr i} {
+            set char [string index $data $i]
+            if {[string is alnum $char] || $char in {- _ . ~} || ($char eq "/" && !$encslash)} {
+                append string $char
+            } else {
+                set cno [scan $char %c]
+                append string [format "%%%02x" $cno]
+            }
+        }
+        lappend results $string
+    }
+
+    if {[llength $results] == 1} {
+        return $string
+    } else {
+        return $results
+    }
 }
 
 proc uri::resolve {base uri} {

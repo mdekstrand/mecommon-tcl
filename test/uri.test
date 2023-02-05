@@ -26,6 +26,14 @@ test uri-encode-1.3 {encode uri with other chars} {
     uri encode "flying&fish/today"
 } {flying%26fish%2ftoday}
 
+test uri-encode-1.4 {encode uri but keep slashes} {
+    uri encode -path "hello/cruel world"
+} {hello/cruel%20world}
+
+test uri-encode-1.4 {encode multiple parts} {
+    uri encode "hello world" "bob" "fish & chips"
+} {hello%20world bob fish%20%26%20chips}
+
 test uri-is-asbsolute-1.1 {test if absolute url is absolute} {
     uri is absolute "https://example.com"
 } {1}
