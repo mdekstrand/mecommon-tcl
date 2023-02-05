@@ -1,7 +1,7 @@
 # oscmd -- run external programs
 #
 #   This package provides routines for working with external commands.
-package provide oscmd 1.0
+package provide oscmd 0.1
 package require logging
 package require missing
 

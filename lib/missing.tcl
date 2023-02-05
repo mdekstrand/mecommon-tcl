@@ -2,7 +2,7 @@
 #
 #   Polyfills for missing functionality TCL or JimTcl should arguably have, and very small
 #   add-on procedures.
-package provide missing 1.0
+package provide missing 1.1
 
 # lshift --
 #
