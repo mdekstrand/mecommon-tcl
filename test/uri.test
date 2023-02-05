@@ -150,4 +150,56 @@ test uri-unparse-2.2 {unparse complex absolute} {
     uri unparse {scheme https host example.com path /search query ?q=help fragment #page2}
 } {https://example.com/search?q=help#page2}
 
+test uri-resolve-1.1 {resolve absolute url} {
+    uri resolve https://example.com/hello https://example.org/fish
+} {https://example.org/fish}
+
+test uri-resolve-1.2 {resolve absolute path} {
+    uri resolve https://example.com/fish /chips
+} {https://example.com/chips}
+
+test uri-resolve-1.3 {resolve schema-relative url} {
+    uri resolve https://example.com/fish ://neverssl.com/search?q=fish
+} {https://neverssl.com/search?q=fish}
+
+test uri-resolve-2.1 {resolve fragment} {
+    uri resolve https://example.com/fish #sides
+} {https://example.com/fish#sides}
+
+test uri-resolve-2.2 {resolve query} {
+    uri resolve https://example.com/fish ?q=nope
+} {https://example.com/fish?q=nope}
+
+test uri-resolve-2.3 {resolve query with fragment} {
+    uri resolve https://example.com/fish?q=yep#results ?q=nope
+} {https://example.com/fish?q=nope#results}
+
+test uri-resolve-3.1 {resolve relative path in folder} {
+    uri resolve https://example.com/folder/ file.html
+} {https://example.com/folder/file.html}
+
+test uri-resolve-3.2 {resolve relative path to file} {
+    uri resolve https://example.com/folder/document file.html
+} {https://example.com/folder/file.html}
+
+test uri-resolve-3.3 {resolve relative path to file with query} {
+    uri resolve https://example.com/folder/document?q=search file.html
+} {https://example.com/folder/file.html}
+
+test uri-resolve-3.4 {resolve relative path to file drops fragment} {
+    uri resolve https://example.com/folder/document#frag file.html
+} {https://example.com/folder/file.html}
+
+test uri-resolve-3.5 {resolve relative path to folder with parent spec} {
+    uri resolve https://example.com/nested/folder/ ../file.html
+} {https://example.com/nested/file.html}
+
+test uri-resolve-3.6 {resolve relative path to folder with parent spec} {
+    uri resolve https://example.com/nested/folder/other.html ../file.html
+} {https://example.com/nested/file.html}
+
+test uri-resolve-3.6 {resolve relative folder} {
+    uri resolve https://example.com/nested/folder/other.html ../folder2/
+} {https://example.com/nested/folder2/}
+
 testreport
