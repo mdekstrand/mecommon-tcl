@@ -1,5 +1,4 @@
-package require tcltest 2.0
-namespace import tcltest::*
+source [file dirname [info script]]/testing.tcl
 
 package require kvlookup
 
@@ -35,3 +34,5 @@ test kvl-array-missing {lookup in array} -body {
     set ada3(grape) yellow
     kvlookup -array ada3 orange
 } -returnCodes error -result "array ada3 has no key orange"
+
+testreport
