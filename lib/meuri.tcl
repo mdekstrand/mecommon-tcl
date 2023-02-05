@@ -1,8 +1,8 @@
-# uri.tcl -
+# meuri.tcl -
 # utilities for HTTP, etc. URIs.
 # very limited — lots of URI features not yet supported.
 
-package provide uri 0.1
+package provide meuri 0.1
 
 namespace eval uri {
     set abs_re {^(?:(https?|s?ftp)?://([^:/]+)(:\d+)?)?(/[^?]*)(?.*)}

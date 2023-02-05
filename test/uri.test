@@ -1,6 +1,6 @@
 source [file dirname [info script]]/testing.tcl
 
-package require uri
+package require meuri
 
 test uri-encode {encode ascii uri} {
     uri encode fish
