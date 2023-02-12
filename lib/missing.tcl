@@ -6,8 +6,8 @@ package provide missing 1.1
 
 # lshift --
 #
-#   Remove and return an item from the front of a list.  This is inspired by
-#   https://wiki.tcl-lang.org/page/lshift, but simpler at the expense of slight efficiency.
+#   Remove and return an item from the front of a list.  This is based on
+#   https://wiki.tcl-lang.org/page/lshift.
 proc lshift {listVar} {
     upvar 1 $listVar list
     if {![info exists list]} {
@@ -16,7 +16,7 @@ proc lshift {listVar} {
         error "lshift: list $listVar is empty"
     }
     set x [lindex $list 0]
-    set list [lreplace $list 0 0]
+    set list [lreplace $list [set list 0] 0]
     return $x
 }
 
@@ -27,7 +27,7 @@ proc lunshift {listVar args} {
     if {![info exists list]} {
         error "lunshift: variable $listVar does not exist"
     }
-    set list [linsert $list 0 {*}$args]
+    set list [linsert $list [set list 0] {*}$args]
 }
 
 # lempty --
