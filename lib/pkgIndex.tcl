@@ -9,6 +9,7 @@
 # full path name of this file's directory.
 
 package ifneeded ansifmt 0.1 [list source [file join $dir ansifmt.tcl]]
+package ifneeded fsextra 0.1 [list source [file join $dir fsextra.tcl]]
 package ifneeded getopt 2008.12.07 [list source [file join $dir getopt.tcl]]
 package ifneeded kvlookup 0.1 [list source [file join $dir kvlookup.tcl]]
 package ifneeded logging 0.1 [list source [file join $dir logging.tcl]]
@@ -16,6 +17,7 @@ package ifneeded meuri 0.1 [list source [file join $dir meuri.tcl]]
 package ifneeded missing 1.1 [list source [file join $dir missing.tcl]]
 package ifneeded oscmd 0.1 [list source [file join $dir oscmd.tcl]]
 package ifneeded platinfo 0.1 [list source [file join $dir platinfo.tcl]]
+package ifneeded runner 0.1 [list source [file join $dir runner.tcl]]
 package ifneeded runprog 0.1 [list source [file join $dir runprog.tcl]]
 package ifneeded sds 1.0 [list source [file join $dir sds.tcl]]
 package ifneeded tagline 0.1 [list source [file join $dir tagline.tcl]]
