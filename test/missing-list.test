@@ -1,0 +1,28 @@
+source [file dirname [info script]]/testing.tcl
+
+package require missing
+
+test lshift-empty {lshift of empty fails} -body {
+    set list [list]
+    lshift list
+} -returnCodes error -result "lshift: list list is empty"
+
+test lshift-single {lshift of single list extracts} {
+    set list [list bob]
+    set x [lshift list]
+    list $x [llength $list]
+} {bob 0}
+
+test lunshift-single {lunshift pushes single value} {
+    set list [list]
+    lunshift list bob
+    return $list
+} {bob}
+
+test lunshift-single {lunshift pushes multiple values in order} {
+    set list [list petrichor]
+    lunshift list alpha beta gamma
+    return $list
+} {alpha beta gamma petrichor}
+
+testreport
