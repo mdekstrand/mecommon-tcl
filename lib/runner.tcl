@@ -67,13 +67,15 @@ proc runner::list_tasks {} {
     variable task_info
     set tasks [array names task_info]
     msg "[llength $tasks] tasks defined"
-    foreach task $tasks {
-        set deps [kvlookup -default "" -array task_info $task deps]
-        set desc [kvlookup -default "" -array task_info $task description]
-        if {$desc eq ""} {
-            puts "[ansi::fmt -bold]$task[ansi::fmt -reset]
-        } else {
-            puts "[ansi::fmt -bold]$task[ansi::fmt -reset]: $desc"
+    ansi::with_out stdout {
+        foreach task $tasks {
+            set deps [kvlookup -default "" -array task_info $task deps]
+            set desc [kvlookup -default "" -array task_info $task description]
+            if {$desc eq ""} {
+                puts "[ansi::fmt -bold]$task[ansi::fmt -reset]
+            } else {
+                puts "[ansi::fmt -bold]$task[ansi::fmt -reset]: $desc"
+            }
         }
     }
 }

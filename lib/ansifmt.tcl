@@ -12,6 +12,7 @@ namespace eval ansi {
         black red green yellow
         blue magenta cyan white
     }
+    variable enabled 1
 
     variable fg_codes
     variable bg_codes
@@ -22,6 +23,43 @@ namespace eval ansi {
         set fg_codes($c) [expr {$i + 30}]
         set bg_codes($c) [expr {$i + 40}]
     }
+}
+
+# query whether a handle is a tty
+proc ::ansi::isatty {handle} {
+    if {[info exists ::tcl_platform(engine)] && $::tcl_platform(engine) eq "Jim"} {
+        # Jim - use aio
+        return [$handle isatty]
+    } else {
+        # Tcl - inspect fconfigure, terminals have -mode
+        set attrs [fconfigure $handle]
+        return [dict exists $attrs -mode]
+    }
+}
+
+proc ::ansi::color_enabled {{h ""}} {
+    variable enabled
+    
+    if {[info exists ::env(NO_COLOR)] && $::env(NO_COLOR) ne ""} {
+        return 0
+    } elseif {$h ne ""} {
+        return [isatty $h]
+    } else {
+        # color enabled and we aren't checking a specific stream
+        return $enabled
+    }
+}
+
+# evaluate body assuming ansi is going to $out
+proc ::ansi::with_out {out body} {
+    variable enabled
+    set old $enabled
+    set enabled [isatty $out]
+    set status [catch {
+        uplevel 1 $body
+    } rv ropts]
+    set enabled $old
+    return {*}$ropts $rv
 }
 
 # ::ansi::fmt --
@@ -66,6 +104,10 @@ proc ::ansi::fmt {args} {
         }
     }
 
-    set fmt [join $codes ";"]
-    return "\33\[${fmt}m"
+    if {[color_enabled]} {
+        set fmt [join $codes ";"]
+        return "\33\[${fmt}m"
+    } else {
+        return ""
+    }
 }

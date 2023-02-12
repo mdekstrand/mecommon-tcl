@@ -101,35 +101,37 @@ namespace eval logging {
             return
         }
 
-        set msg ""
-        set codes {}
-        while {![lempty $args]} {
-            set arg [lshift args]
-            switch -- "$arg" {
-                -fg -
-                -bg {
-                    lappend codes $arg [lshift args]
-                }
-                -bold -
-                -dim -
-                -reset {
-                    lappend codes $arg
-                }
-                default {
-                    if {$msg ne ""} {
-                        append msg " "
+        ansi::with_out stderr {
+            set msg ""
+            set codes {}
+            while {![lempty $args]} {
+                set arg [lshift args]
+                switch -- "$arg" {
+                    -fg -
+                    -bg {
+                        lappend codes $arg [lshift args]
                     }
-                    if {![lempty $codes]} {
-                        append msg [ansi::fmt {*}$codes]
-                        set codes {}
+                    -bold -
+                    -dim -
+                    -reset {
+                        lappend codes $arg
                     }
-                    append msg $arg
+                    default {
+                        if {$msg ne ""} {
+                            append msg " "
+                        }
+                        if {![lempty $codes]} {
+                            append msg [ansi::fmt {*}$codes]
+                            set codes {}
+                        }
+                        append msg $arg
+                    }
                 }
             }
-        }
 
-        set fmt_proc "fmt_$level"
-        puts stderr [$fmt_proc $msg]
+            set fmt_proc "fmt_$level"
+            puts stderr [$fmt_proc $msg]
+        }
     }
 
     proc ns_msg {ns {tag ""}} {
