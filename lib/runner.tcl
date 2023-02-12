@@ -37,7 +37,7 @@ proc runner::run_task {name} {
 
     set task_status($name) pending
     foreach dep $task_deps($name) {
-        run_task $name
+        run_task $dep
     }
 
     set task_status($name) running
