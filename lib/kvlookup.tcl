@@ -36,8 +36,6 @@ proc kvlookup {args} {
     }
     if {[lempty $args]} {
         error "no key specified"
-    } elseif {[llength $args] > 1} {
-        error "kvlookup only supports 1 key"
     }
     set key [lshift args]
 
@@ -63,7 +61,7 @@ proc kvlookup {args} {
             array {
                 # directly look up the array key
                 if {[info exists kvv($key)]} {
-                    return $kvv($key)
+                    set value $kvv($key)
                 } elseif {[info exists default]} {
                     return $default
                 } else {
@@ -77,14 +75,29 @@ proc kvlookup {args} {
         }
     }
 
-    # if we have reached this point, we are in dict mode with a dictionary in $dict
-    if {[dict exists $dict $key]} {
-        return [dict get $dict $key]
-    } elseif {[info exists default]} {
-        return $default
-    } elseif {[info exists var]} {
-        error -code {KVLOOKUP DICT UNFOUND} "dictionary in $var has no key $key"
+    if {![info exists value]} {
+        # if we have reached this point, we are in dict mode with a dictionary in $dict
+        if {[dict exists $dict $key]} {
+            set value [dict get $dict $key]
+        } elseif {[info exists default]} {
+            return $default
+        } elseif {[info exists var]} {
+            error -code {KVLOOKUP DICT UNFOUND} "dictionary in $var has no key $key"
+        } else {
+            error -code {KVLOOKUP DICT UNFOUND} "dictionary value has no key $key"
+        }
+    }
+
+    # now — are we done, or do we have more keys?
+    if {[lempty $args]} {
+        # no more keys — return
+        return $value
     } else {
-        error -code {KVLOOKUP DICT UNFOUND} "dictionary value has no key $key"
+        # we have more keys — $value is dict, recurse
+        set rcargs [list]
+        if {[info exists default]} {
+            lappend rcargs -default $default
+        }
+        return [kvlookup {*}$rcargs $value {*}$args]
     }
 }

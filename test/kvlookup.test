@@ -35,4 +35,29 @@ test kvl-array-missing {lookup in array} -body {
     kvlookup -array ada3 orange
 } -returnCodes error -result "array ada3 has no key orange"
 
+test kvl-multi-key {lookup multiple keys} {
+    set kvds [dict create fish [dict create chips tasty]]
+    kvlookup $kvds fish chips
+} tasty
+
+test kvl-multi-key-var {lookup multiple keys with -var} {
+    set kvds [dict create fish [dict create chips tasty]]
+    kvlookup -var kvds fish chips
+} tasty
+
+test kvl-multi-key-default-first {lookup multiple with first as default} {
+    set kvds [dict create fish [dict create chips tasty]]
+    kvlookup -default nope $kvds oyster chips
+} nope
+
+test kvl-multi-key-default-second {lookup multiple keys with second as default} {
+    set kvds [dict create fish [dict create chips tasty]]
+    kvlookup -default nope $kvds fish fries
+} nope
+
+test kvl-multi-key-array {lookup multiple keys with -array} {
+    set kvds(fish) [dict create chips tasty]
+    kvlookup -array kvds fish chips
+} tasty
+
 testreport
