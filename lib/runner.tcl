@@ -1,26 +1,33 @@
 # TCL task runner
 package provide runner 0.1
 package require logging
+package require kvlookup
+package require ansifmt
 
 namespace eval runner {
-    variable task_deps
+    variable task_info
     variable task_status
 }
 logging::ns_msg runner
 
 proc runner::add_task {name deps body} {
-    variable task_deps
+    variable task_info
     variable task_status
 
     msg -debug "defining task $name"
-    set task_deps($name) $deps
+    set info [dict create deps $deps]
+    if {[regexp -line {^#\s*(.*)} [string trim $body] -> descr]} {
+        msg -debug "$name: $descr"
+        dict set info description $descr
+    }
+    set task_info($name) $info
     set task_status($name) ready
     
     proc "::runner::tasks::$name" {} $body
 }
 
 proc runner::run_task {name} {
-    variable task_deps
+    variable task_info
     variable task_status
 
     msg -trace "checking task $name"
@@ -36,7 +43,7 @@ proc runner::run_task {name} {
     }
 
     set task_status($name) pending
-    foreach dep $task_deps($name) {
+    foreach dep [kvlookup -default {} -array task_info $name deps] {
         run_task $dep
     }
 
@@ -53,6 +60,21 @@ proc runner::run_task {name} {
 proc runner::dispatch {tasks} {
     foreach task $tasks {
         run_task $task
+    }
+}
+
+proc runner::list_tasks {} {
+    variable task_info
+    set tasks [array names task_info]
+    msg "[llength $tasks] tasks defined"
+    foreach task $tasks {
+        set deps [kvlookup -default "" -array task_info $task deps]
+        set desc [kvlookup -default "" -array task_info $task description]
+        if {$desc eq ""} {
+            puts "[ansi::fmt -bold]$task[ansi::fmt -reset]
+        } else {
+            puts "[ansi::fmt -bold]$task[ansi::fmt -reset]: $desc"
+        }
     }
 }
 
