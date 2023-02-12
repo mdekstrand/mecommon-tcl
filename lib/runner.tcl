@@ -46,7 +46,7 @@ proc runner::run_task {name} {
     ::runner::tasks::$name
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
-    msg -success "task $name completed successfully in" [format "%.2fs" $elapsed]
+    msg task -bold $name -reset "completed successfully in" -fg green [format "%.2fs" $elapsed]
     set task_status($name) finished
 }
 
