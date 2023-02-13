@@ -1,0 +1,30 @@
+source [file dirname [info script]]/testing.tcl
+set root [file dirname [file dirname [info script]]]
+
+package require fsextra
+
+test walk-single-dir-first {walking a single dir produces files in order} {
+    set res [list]
+    fswalk path $root/test {
+        lappend res $path
+    }
+    return $res
+} [list "$root/test/" {*}[lsort [glob $root/test/*]]]
+
+test walk-single-dir-last {walking a single dir produces files in order} {
+    set res [list]
+    fswalk -dirs-last path $root/test {
+        lappend res $path
+    }
+    return $res
+} [list {*}[lsort [glob $root/test/*]] "$root/test/"]
+
+test walk-single-no-dirs {walking a single dir produces files in order w/o dirs} {
+    set res [list]
+    fswalk -no-dirs path $root/test {
+        lappend res $path
+    }
+    return $res
+} [lsort [glob $root/test/*]]
+
+testreport
