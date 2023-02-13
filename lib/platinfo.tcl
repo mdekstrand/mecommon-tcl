@@ -112,6 +112,41 @@ namespace eval ::plat {
         return $cache(distro)
     }
 
+    proc libc {} {
+        variable cache
+        set libc_paths {
+            /usr/lib/libc.so.6
+            /usr/lib/libc.so
+        }
+        if {[info exists cache(libc)]} {
+            return $cache(libc)
+        }
+
+        set cache(libc) unknown
+        foreach path $libc_paths {
+            if {![file exists $path]} {
+                msg -debug "$path not found"
+                continue
+            }
+
+            set rc [catch {
+                set tag [exec strings $path | grep -E ^(glibc|musl)]
+                if {[string match musl* $tag]} {
+                    set cache(libc) musl
+                } elseif {[string match glibc* $tag]} {
+                    set cache(libc) [string map {" " -} $tag]
+                }
+            } rv rerr]
+            if {$rc} {
+                msg -error "failed to scan libc: $rv"
+            }
+            # got this far, we found a libc, or can't scan one
+            break
+        }
+
+        return $cache(libc)
+    }
+
     proc is {args} {
         set result 1
         foreach arg $args {
@@ -125,6 +160,12 @@ namespace eval ::plat {
                 }
                 mac {
                     set result [expr {$result && [os] eq "darwin"}]
+                }
+                musl {
+                    set result [expr {$result && [libc] eq "musl"}]
+                }
+                glibc {
+                    set result [expr {$result && [string match glibc-* [libc]]}]
                 }
                 -* {
                     set query [string range $arg 1 end]

@@ -6,9 +6,9 @@ package require getopt
 package require ansifmt
 package require platinfo
 
-proc display {label value} {
+proc display {label args} {
     ansi::with_out stdout {
-        puts "$label: [ansi::wrap -bold $value]"
+        puts "$label: [ansi::wrap -bold {*}$args]"
     }
 }
 
@@ -34,3 +34,12 @@ display arch [plat::arch]
 display os [plat::os]
 display flavor [plat::flavor]
 display distro [plat::distro]
+
+msg "testing platform predicates"
+foreach pred {windows unix mac musl glibc} {
+    set response {
+        {-reset no}
+        {-fg green yes}
+    }
+    display "$pred?" {*}[lindex $response [plat::is $pred]]
+}
