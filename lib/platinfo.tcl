@@ -84,13 +84,12 @@ namespace eval ::plat {
         }
 
         if {[file exists /etc/os-release]} {
-            set relvars [dict create]
             set release [read_file /etc/os-release]
-            set script [regsub -all -line {^(\\w+)=} "dict set relvars \\1 " $release]
-            eval script
-            foreach {key value} $relvars {
+            set script [regsub -all -line {^([A-Z0-9_]+)=} $release "\\1 "]
+            foreach {key value} $script {
                 msg -debug "release: $key=$value"
             }
+            set relvars [dict create {*}$script]
             if {[dict exists $relvars ID]} {
                 set distro [dict get $relvars ID]
             } else {

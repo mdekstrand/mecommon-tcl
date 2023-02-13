@@ -22,6 +22,7 @@ getopt arg $argv {
         # suppress informational messages
         logging::configure -quiet
     }
+    arglist {}
 }
 
 msg "reading TCL platform data"
@@ -35,6 +36,7 @@ display arch [plat::arch]
 display os [plat::os]
 display flavor [plat::flavor]
 display distro [plat::distro]
+display libc [plat::libc]
 
 msg "testing platform predicates"
 foreach pred {windows unix mac musl glibc} {
