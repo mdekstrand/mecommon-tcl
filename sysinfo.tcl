@@ -1,3 +1,4 @@
+#!/usr/bin/env jimsh
 set root [file dirname [string map {\\ /} [info script]]]
 set auto_path [list "$root/lib" {*}$auto_path]
 
