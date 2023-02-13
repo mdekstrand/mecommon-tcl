@@ -40,10 +40,12 @@ set prefix [file tail $common]
 switch $mode {
     push {
         msg "pushing local changes to common git"
+        oscmd run git fetch common
         oscmd run git subtree push --prefix=$prefix common main
     }
     pull {
         msg "pulling new changes from common git"
+        oscmd run git fetch common
         oscmd run git subtree pull --prefix=$prefix common main --squash
     }
 }
