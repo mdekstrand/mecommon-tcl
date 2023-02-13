@@ -37,6 +37,11 @@ It does not fail on an empty list.
 `luniq list` returns the unique elements of `list`.  Order is preserved — each element is
 returned the *first* time it appears in `list`, and subsequent occurrences are skipped.
 
+### lunshift
+
+`lunshift listVar elt...` pushes one or more elements onto the *beginning* of a list.
+If multiple elements are provided, their order is preserved.
+
 ## Info Routines
 
 ### exists
