@@ -25,6 +25,10 @@ getopt arg $argv {
         # print directories after their contents
         lappend walk_args -no-dirs
     }
+    --relative {
+        # print paths relative to root
+        lappend walk_args -relative
+    }
 
     arglist {
         set paths $arg
