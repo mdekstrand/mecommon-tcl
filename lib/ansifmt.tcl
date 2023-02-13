@@ -37,9 +37,13 @@ proc ::ansi::isatty {handle} {
     }
 }
 
+proc ::ansi::default_term {handle} {
+    set enabled [isatty $handle]
+}
+
 proc ::ansi::color_enabled {{h ""}} {
     variable enabled
-    
+
     if {[info exists ::env(NO_COLOR)] && $::env(NO_COLOR) ne ""} {
         return 0
     } elseif {$h ne ""} {
@@ -110,4 +114,42 @@ proc ::ansi::fmt {args} {
     } else {
         return ""
     }
+}
+
+# wrap things in ANSI codes, followed by reset
+proc ansi::wrap args {
+    set formatted ""
+    set codes {}
+    set final_reset 1
+    while {![lempty $args]} {
+        set arg [lshift args]
+        switch -- "$arg" {
+            -fg -
+            -bg {
+                lappend codes $arg [lshift args]
+            }
+            -bold -
+            -dim -
+            -reset {
+                lappend codes $arg
+            }
+            -no-reset {
+                set final_reset 0
+            }
+            default {
+                if {$formatted ne ""} {
+                    append formatted " "
+                }
+                if {![lempty $codes]} {
+                    append formatted [ansi::fmt {*}$codes]
+                    set codes {}
+                }
+                append formatted $arg
+            }
+        }
+    }
+    if {$final_reset} {
+        append formatted [ansi::fmt -reset]
+    }
+    return $formatted
 }

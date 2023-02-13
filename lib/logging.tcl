@@ -102,33 +102,7 @@ namespace eval logging {
         }
 
         ansi::with_out stderr {
-            set msg ""
-            set codes {}
-            while {![lempty $args]} {
-                set arg [lshift args]
-                switch -- "$arg" {
-                    -fg -
-                    -bg {
-                        lappend codes $arg [lshift args]
-                    }
-                    -bold -
-                    -dim -
-                    -reset {
-                        lappend codes $arg
-                    }
-                    default {
-                        if {$msg ne ""} {
-                            append msg " "
-                        }
-                        if {![lempty $codes]} {
-                            append msg [ansi::fmt {*}$codes]
-                            set codes {}
-                        }
-                        append msg $arg
-                    }
-                }
-            }
-
+            set msg [ansi::wrap {*}$args]
             set fmt_proc "fmt_$level"
             puts stderr [$fmt_proc $msg]
         }
