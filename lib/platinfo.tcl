@@ -77,6 +77,41 @@ namespace eval ::plat {
         }
     }
 
+    proc distro {} {
+        variable cache
+        if {[info exists cache(distro)]} {
+            return $cache(distro)
+        }
+
+        if {[file exists /etc/os-release]} {
+            set relvars [dict create]
+            set release [read_file /etc/os-release]
+            set script [regsub -all -line {^(\\w+)=} "dict set relvars \\1 " $release]
+            eval script
+            foreach {key value} $relvars {
+                msg -debug "release: $key=$value"
+            }
+            if {[dict exists $relvars ID]} {
+                set distro [dict get $relvars ID]
+            } else {
+                msg -warn "/etc/os-release: no ID defined"
+                set distro "unknown"
+            }
+            if {[dict exists $relvars VERSION_ID]} {
+                append distro "-[dict get $relvars VERSION_ID]"
+            } else {
+                msg -warn "/etc/os-release: no VERSION_ID defined"
+            }
+            set cache(distro) $distro
+        } elseif {[flavor] eq "msys2"} {
+            set cache(distro) msys2
+        } else {
+            set cache(distro) "unknown"
+        }
+
+        return $cache(distro)
+    }
+
     proc is {args} {
         set result 1
         foreach arg $args {
@@ -105,5 +140,5 @@ namespace eval ::plat {
         return $result
     }
 
-    namespace export tag os arch is
+    namespace export tag os arch flavor is
 }
