@@ -1,0 +1,21 @@
+source [file dirname [info script]]/testing.tcl
+
+package require tagline
+
+test tagline-parse-basic {parse basic tagged line} {
+    tagline parse "MD5(scroll.txt) = 2b8a8fa4d7118bf8216a6175b357814b"
+} {scroll.txt MD5 2b8a8fa4d7118bf8216a6175b357814b}
+
+test tagline-parse-norm-unmatched {parse with normalization requested but not relevant} {
+    tagline parse -norm-hash "MD5(scroll.txt) = 2b8a8fa4d7118bf8216a6175b357814b"
+} {scroll.txt MD5 2b8a8fa4d7118bf8216a6175b357814b}
+
+test tagline-parse-norm-unneeded {parse with normalization requested but unnecessary} {
+    tagline parse -norm-hash "SHA256(scroll.txt) = a499a83d80f9e475f259fea751cb8a63284310cee61e8645b2dc73022351ef54"
+} {scroll.txt SHA256 a499a83d80f9e475f259fea751cb8a63284310cee61e8645b2dc73022351ef54}
+
+test tagline-parse-norm {parse with normalization} {
+    tagline parse -norm-hash "SHA2-256(scroll.txt) = a499a83d80f9e475f259fea751cb8a63284310cee61e8645b2dc73022351ef54"
+} {scroll.txt SHA256 a499a83d80f9e475f259fea751cb8a63284310cee61e8645b2dc73022351ef54}
+
+testreport

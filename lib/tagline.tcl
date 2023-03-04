@@ -7,12 +7,20 @@ package require missing
 proc tagline {cmd args} {
     switch -- $cmd {
         parse {
+            set norm_sha 0
+            if {[lpeek $args] == "-norm-hash"} {
+                set norm_sha 1
+                lshift args
+            }
             set line [lshift args]
             if {![lempty $args]} {
                 error "too many arguments"
             }
             set line [string trim $line]
             if {[regexp {^([A-Z0-9-]+)\s*\(([^)]+)\)\s*=\s*(.*)} $line -> tag subject value]} {
+                if {$norm_sha} {
+                    set tag [regsub {^SHA2-(\d+)} $tag {SHA\1}]
+                }
                 return [list $subject $tag $value]
             } else {
                 error "invalid tagline: $line"
