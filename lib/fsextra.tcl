@@ -30,17 +30,20 @@ proc fcopy_tcl {f1 f2} {
     file copy -force $f1 $f2
 }
 
-# set up a "best" fcopy based on platform
-if {[plat::is mac]} {
-    set FCOPY fcopy_macos
-} elseif {[plat::is unix]} {
-    set FCOPY fcopy_unix
-} else {
-    set FCOPY fcopy_tcl
-}
-
 proc fcopy {f1 f2} {
     global FCOPY
+
+    # find and cache best fcopy for platform
+    if {![info exists FCOPY]} {
+        if {[plat::is mac]} {
+            set FCOPY fcopy_macos
+        } elseif {[plat::is unix]} {
+            set FCOPY fcopy_unix
+        } else {
+            set FCOPY fcopy_tcl
+        }
+    }
+
     if {[fnewer $f1 $f2]} {
         msg -trace "$FCOPY $f1 -> $f2"
         $FCOPY $f1 $f2
