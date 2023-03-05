@@ -56,8 +56,8 @@ test kvl-multi-key-default-second {lookup multiple keys with second as default} 
 } nope
 
 test kvl-multi-key-array {lookup multiple keys with -array} {
-    set kvds(fish) [dict create chips tasty]
-    kvlookup -array kvds fish chips
+    set kvarr(fish) [dict create chips tasty]
+    kvlookup -array kvarr fish chips
 } tasty
 
 testreport
