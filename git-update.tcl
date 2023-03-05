@@ -15,9 +15,11 @@ getopt arg $argv {
     }
 
     --push {
+        # push local changes to upstream
         set mode push
     }
     --pull {
+        # pull upstream changes to local
         set mode pull
     }
 }
