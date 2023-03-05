@@ -48,9 +48,3 @@ If multiple elements are provided, their order is preserved.
 
 The `exists` procedure is a mostly-compatible polyfill to provide Jim's `exists`
 command on Tcl.
-
-## I/O routines
-
-### read_file
-
-The `read_file` procedure reads the contents of a file.

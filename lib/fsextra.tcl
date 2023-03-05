@@ -208,6 +208,14 @@ proc fswalk {args} {
     }
 }
 
-proc copytree {src dst} {
-    
+# read_file --
+#
+#   read a file.
+proc read_file {path} {
+    set fp [open $path r]
+    catch {
+        read $fp
+    } res opts
+    close $fp
+    return {*}$opts $res
 }

@@ -3,6 +3,7 @@
 #   Provide information about the system platform.
 package provide platinfo 0.1
 package require logging
+package require fsextra
 
 namespace eval ::plat {
     variable cache
