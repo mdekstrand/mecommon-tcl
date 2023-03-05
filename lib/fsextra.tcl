@@ -42,10 +42,12 @@ if {[plat::is mac]} {
 proc fcopy {f1 f2} {
     global FCOPY
     if {[fnewer $f1 $f2]} {
-        msg -debug "$FCOPY $f1 -> $f2"
+        msg -trace "$FCOPY $f1 -> $f2"
         $FCOPY $f1 $f2
+        return 1
     } else {
-        msg -debug "$f2 up to date"
+        msg -trace "$f2 up to date"
+        return 0
     }
 }
 
