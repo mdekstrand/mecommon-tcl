@@ -1,0 +1,25 @@
+source [file dirname [info script]]/testing.tcl
+
+package require setops
+
+test setops-union-empty {union of empty is empty} {
+    setops union {} {}
+} {}
+
+test setops-union-left-empty {union of left empty with set is set} {
+    setops union {} {a}
+} {a}
+
+test setops-union-right-empty {union of right empty with set is set} {
+    setops union {a} {}
+} {a}
+
+test setops-union-distinct {union of identical sets is set} {
+    setops union {a} {a}
+} {a}
+
+test setops-union-merge {union of union with overlap is correct} {
+    lsort [setops union {b a} {a c}]
+} {a b c}
+
+testreport
