@@ -28,6 +28,7 @@ proc runner::_order_visit {task listVar statVar {state required}} {
     upvar $listVar sorted
     upvar $statVar status
 
+    set append 1
     set tgt_state $state
     if {[string range $task end end] == "?"} {
         set tgt_state optional
@@ -44,7 +45,8 @@ proc runner::_order_visit {task listVar statVar {state required}} {
             # task is enqueued, but see if we are supposed to upgrade it
             if {$tgt_state eq "required"} {
                 set status($task) required
-                # we need to propgate required status to deps
+                # we need to propgate required status to deps, but not add to list
+                set append false
             } else {
                 return
             }
@@ -62,7 +64,9 @@ proc runner::_order_visit {task listVar statVar {state required}} {
 
     msg -debug "adding $task to work list"
     set status($task) $tgt_state
-    lappend sorted $task
+    if {$append} {
+        lappend sorted $task
+    }
 }
 
 proc runner::sort_tasks {roots} {
