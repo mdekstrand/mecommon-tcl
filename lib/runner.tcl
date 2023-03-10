@@ -23,12 +23,12 @@ proc runner::add_task {name deps body} {
     proc "::runner::tasks::$name" {} $body
 }
 
-proc runner::_order_visit {task listVar statVar} {
+proc runner::_order_visit {task listVar statVar {state required}} {
     variable task_info
     upvar $listVar sorted
     upvar $statVar status
 
-    set tgt_state required
+    set tgt_state $state
     if {[string range $task end end] == "?"} {
         set tgt_state optional
         set task [string range $task 0 end-1]
@@ -44,8 +44,10 @@ proc runner::_order_visit {task listVar statVar} {
             # task is enqueued, but see if we are supposed to upgrade it
             if {$tgt_state eq "required"} {
                 set status($task) required
+                # we need to propgate required status to deps
+            } else {
+                return
             }
-            return
         }
         required {
             # task already enqueued
@@ -55,7 +57,7 @@ proc runner::_order_visit {task listVar statVar} {
     
     set status($task) visiting
     foreach dep [dict get $task_info($task) deps] {
-        _order_visit $dep sorted status
+        _order_visit $dep sorted status $tgt_state
     }
 
     msg -debug "adding $task to work list"
