@@ -73,6 +73,10 @@ proc runner::sort_tasks {roots} {
     # sort the tasks
     set task_order [list]
     foreach task $roots {
+        if {![exists task_info($task)]} {
+            msg -error "unknown task $task"
+            error "task $task does not exist"
+        }
         _order_visit $task task_order dfs_status
     }
 
