@@ -115,9 +115,11 @@ proc runner::run_task {name} {
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
     msg task -bold $name -reset "completed successfully in" -fg green [format "%.2fs" $elapsed]
+    dict set task_info($name) time $elapsed
 }
 
 proc runner::dispatch {tasks} {
+    variable task_info
     set start [clock milliseconds]
     set worklist [sort_tasks $tasks]
     foreach task $worklist {
@@ -126,6 +128,10 @@ proc runner::dispatch {tasks} {
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
     msg -success "finished in" -fg white [format "%.2fs" $elapsed]
+    foreach task $worklist {
+        set time [dict get $task_info($task) time]
+        msg -debug -bold $task -reset -fg white "took" -bold [format "%.2fs" $time]
+    }
 }
 
 proc runner::list_tasks {tasks} {
