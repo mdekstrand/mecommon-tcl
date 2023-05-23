@@ -2,7 +2,7 @@
 #
 # Test program for fsextra's walk
 
-set root "[file dirname [info script]]/.."
+set root [file dirname [file dirname [file normalize [info script]]]]
 set auto_path [list $root/lib {*}$auto_path]
 
 package require logging
