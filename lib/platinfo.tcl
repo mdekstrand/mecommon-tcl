@@ -151,6 +151,7 @@ namespace eval ::plat {
         set result 1
         foreach arg $args {
             switch -glob -- $arg {
+                win -
                 windows {
                     set result [expr {$result && [os] eq "windows"}]
                 }
@@ -173,7 +174,7 @@ namespace eval ::plat {
                     set result [expr $result && !$sr]
                 }
                 default {
-                    error "unknown query $flag"
+                    error "unknown query $arg"
                 }
             }
         }
