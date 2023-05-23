@@ -31,22 +31,20 @@ proc fcopy_tcl {f1 f2} {
 }
 
 proc fcopy {f1 f2} {
-    global FCOPY
-
     # find and cache best fcopy for platform
-    if {![info exists FCOPY]} {
+    if {![info exists ::fsextra::FCOPY]} {
         if {[plat::is mac]} {
-            set FCOPY fcopy_macos
+            set ::fsextra::FCOPY fcopy_macos
         } elseif {[plat::is unix]} {
-            set FCOPY fcopy_unix
+            set ::fsextra::FCOPY fcopy_unix
         } else {
-            set FCOPY fcopy_tcl
+            set ::fsextra::FCOPY fcopy_tcl
         }
     }
 
     if {[fnewer $f1 $f2]} {
-        msg -trace "$FCOPY $f1 -> $f2"
-        $FCOPY $f1 $f2
+        msg -trace "$::fsextra::FCOPY $f1 -> $f2"
+        $::fsextra::FCOPY $f1 $f2
         return 1
     } else {
         msg -trace "$f2 up to date"
