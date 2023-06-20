@@ -3,6 +3,7 @@ package provide runner 0.1
 package require logging
 package require kvlookup
 package require ansifmt
+package require formats
 
 namespace eval runner {
     variable task_info
@@ -19,7 +20,7 @@ proc runner::add_task {name deps body} {
         dict set info description $descr
     }
     set task_info($name) $info
-    
+
     proc "::runner::tasks::$name" {} $body
 }
 
@@ -39,7 +40,7 @@ proc runner::_order_visit {task listVar statVar {state required}} {
     switch $status($task) {
         visiting {
             msg -error "visiting $task twice: circular dependency"
-            error "circular dependencies in task graph"    
+            error "circular dependencies in task graph"
         }
         optional {
             # task is enqueued, but see if we are supposed to upgrade it
@@ -56,7 +57,7 @@ proc runner::_order_visit {task listVar statVar {state required}} {
             return
         }
     }
-    
+
     set status($task) visiting
     foreach dep [dict get $task_info($task) deps] {
         _order_visit $dep sorted status $tgt_state
@@ -114,7 +115,7 @@ proc runner::run_task {name} {
     ::runner::tasks::$name
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
-    msg task -bold $name -reset "completed successfully in" -fg green [format "%.2fs" $elapsed]
+    msg task -bold $name -reset "completed successfully in" -fg green [fmt duration $elapsed]
     dict set task_info($name) time $elapsed
 }
 
@@ -127,10 +128,10 @@ proc runner::dispatch {tasks} {
     }
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
-    msg -success "finished in" -fg white [format "%.2fs" $elapsed]
+    msg -success "finished in" -fg white [fmt duration $elapsed]
     foreach task $worklist {
         set time [dict get $task_info($task) time]
-        msg -debug -bold $task -reset -fg white "took" -bold [format "%.2fs" $time]
+        msg -debug -bold $task -reset -fg white "took" -bold [fmt duration $elapsed]
     }
 }
 

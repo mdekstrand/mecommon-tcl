@@ -1,4 +1,4 @@
-package provide format 0.1
+package provide formats 0.1
 package require missing
 
 namespace eval fmt {
