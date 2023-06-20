@@ -1,0 +1,15 @@
+source [file dirname [info script]]/testing.tcl
+set root [file dirname [file dirname [info script]]]
+
+package require format
+
+test fd-seconds {formatting seconds works} {
+    fmt duration 2.734
+} {2.73s}
+
+test fd-many {formatting hours works} {
+    fmt duration 7385.32
+} {2h3m5.32s}
+
+testreport
+
