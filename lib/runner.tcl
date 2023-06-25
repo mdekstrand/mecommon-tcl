@@ -112,26 +112,41 @@ proc runner::run_task {name} {
 
     set start [clock milliseconds]
     msg "beginning task $name"
-    ::runner::tasks::$name
+    set status [catch {
+        ::runner::tasks::$name
+    } rv rvopts]
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
-    msg task -bold $name -reset "completed successfully in" -fg green [fmt duration $elapsed]
     dict set task_info($name) time $elapsed
+    if {$status} {
+        msg -error task -fg white $name -red failed: -reset $rv
+        return {*}$rvopts $rv
+    } else {
+        msg task -bold $name -reset "completed successfully in" -fg green [fmt duration $elapsed]
+    }
 }
 
 proc runner::dispatch {tasks} {
     variable task_info
     set start [clock milliseconds]
     set worklist [sort_tasks $tasks]
-    foreach task $worklist {
-        run_task $task
-    }
+    set status [catch {
+        foreach task $worklist {
+            run_task $task
+        }
+    } retval retopts]
+
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
-    msg -success "finished in" -fg white [fmt duration $elapsed]
-    foreach task $worklist {
-        set time [dict get $task_info($task) time]
-        msg -debug -bold $task -reset -fg white "took" -bold [fmt duration $elapsed]
+    if {$status} {
+        msg -error "task graph failed in" [fmt duration $elapsed]
+        return {*}$retopts $retval
+    } else {
+        msg -success "finished in" -fg white [fmt duration $elapsed]
+        foreach task $worklist {
+            set time [dict get $task_info($task) time]
+            msg -debug -bold $task -reset -fg white "took" -bold [fmt duration $elapsed]
+        }
     }
 }
 
