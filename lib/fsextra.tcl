@@ -15,6 +15,22 @@ proc fnewer {f1 f2} {
     return $($mt1 > $mt2)
 }
 
+# get the age of a file
+proc file_age {file} {
+    try {
+        file mtime $file
+    } on ok {time} {
+        msg -trace "file_age: $file modified at $time"
+        return [expr {[clock seconds] - $time}]
+    } trap {POSIX ENOENT} {} {
+        msg -trace "file_age: $file not found"
+        return [clock seconds]
+    } on error {err opts} {
+        msg -warn "file_age: $file: $err"
+        return -error {*}$opts $err
+    }
+}
+
 proc fcopy_macos {f1 f2} {
     # copy with cloning if possible
     oscmd run cp -c $f1 $f2
