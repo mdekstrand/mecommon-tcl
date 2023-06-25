@@ -119,7 +119,7 @@ proc runner::run_task {name} {
     set elapsed [expr {($finish - $start) / 1000.0}]
     dict set task_info($name) time $elapsed
     if {$status} {
-        msg -error task -fg white $name -red failed: -reset $rv
+        msg -error task -fg white $name -fg red failed: -reset $rv
         return {*}$rvopts $rv
     } else {
         msg task -bold $name -reset "completed successfully in" -fg green [fmt duration $elapsed]
