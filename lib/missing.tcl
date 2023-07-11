@@ -58,6 +58,44 @@ proc luniq {list} {
     return $result
 }
 
+# lglob --
+# 
+#   filter a list based on a glob
+proc lglob args {
+    set invert 0
+    while {![lempty $args]} {
+        set arg [lpeek $args]
+        switch -glob -- $arg {
+            -invert {
+                set invert 1
+                lshift args
+            }
+            -- {
+                break
+            }
+            -* {
+                error "unexpected argument $arg"
+            }
+            default {
+                break
+            }
+        }
+    }
+    lassign $args glob list
+    set result [list]
+    foreach x $list {
+        set want [string match $glob $x]
+        if {$invert} {
+            set want [expr {!$want}]
+        }
+        if {$want} {
+            lappend result $x
+        }
+    }
+
+    return $result
+}
+
 # exists --
 #
 #   A Jim-like 'exists' procedure for core Tcl.  Only tests variables for now.
