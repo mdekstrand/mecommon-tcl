@@ -82,7 +82,7 @@ namespace eval logging {
         variable start_time
         variable verbose
         msg -debug "propagating log config to environment"
-        set ::env(ME_LOG_START) $start_time
+        set ::env(ME_LOG_START_CLOCK) $start_time
         set ::env(ME_LOG_VERBOSE) $verbose
     } 
 
