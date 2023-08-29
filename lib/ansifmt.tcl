@@ -42,7 +42,7 @@ proc ::ansi::color_supported {h} {
         return 1
     }
 
-    if {[info exists $::env(FORCE_COLOR)] && $::env(FORCE_COLOR) > 0 && $h in {stdin stdout}} {
+    if {[info exists $::env(FORCE_COLOR)] && $::env(FORCE_COLOR) > 0 && $h in {stderr stdout}} {
         return 1
     }
 
