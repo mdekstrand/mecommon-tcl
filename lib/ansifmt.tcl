@@ -37,8 +37,20 @@ proc ::ansi::isatty {handle} {
     }
 }
 
+proc ::ansi::color_supported {h} {
+    if {[isatty $h]} {
+        return 1
+    }
+
+    if {[info exists ::env(FORCE_COLOR)] && $::env(FORCE_COLOR) > 0 && $h in {stderr stdout}} {
+        return 1
+    }
+
+    return 0
+}
+
 proc ::ansi::default_term {handle} {
-    set enabled [isatty $handle]
+    set enabled [color_supported $handle]
 }
 
 proc ::ansi::color_enabled {{h ""}} {
@@ -47,7 +59,7 @@ proc ::ansi::color_enabled {{h ""}} {
     if {[info exists ::env(NO_COLOR)] && $::env(NO_COLOR) ne ""} {
         return 0
     } elseif {$h ne ""} {
-        return [isatty $h]
+        return [color_supported $h]
     } else {
         # color enabled and we aren't checking a specific stream
         return $enabled
@@ -58,7 +70,7 @@ proc ::ansi::color_enabled {{h ""}} {
 proc ::ansi::with_out {out body} {
     variable enabled
     set old $enabled
-    set enabled [isatty $out]
+    set enabled [color_supported $out]
     set status [catch {
         uplevel 1 $body
     } rv ropts]

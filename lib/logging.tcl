@@ -1,5 +1,6 @@
 package provide logging 0.1
 package require ansifmt
+package require formats
 
 namespace eval logging {
     namespace export msg
@@ -15,6 +16,36 @@ namespace eval logging {
 
     variable lvl_alias
     set lvl_alias(err) error
+
+    variable process
+    variable start_time [clock milliseconds]
+
+    proc elapsed {} {
+        variable start_time
+        set time [clock milliseconds]
+        return [expr {($time - $start_time) / 1000.0}]
+    }
+
+    proc prefix {} {
+        variable process
+        variable start_time
+        set pfx ""
+        if {[info exists start_time]} {
+            set et [fmt duration [elapsed]]
+            set nspace [expr {6 - [string length $et]}]
+            if {$nspace > 0} {
+                set space [string repeat " " $nspace]
+            } else {
+                set space ""
+            }
+            append pfx "\[$space[ansi::fmt -fg green]$et[ansi::fmt -reset]\] "
+        }
+        if {[info exists process]} {
+        append pfx "[ansi::fmt -fg yellow]$process[ansi::fmt -reset] "
+        }
+        
+        return $pfx
+    }
 
     proc fmt_trace {msg} {
         return "[ansi::fmt -dim]TRC:[ansi::fmt -reset] $msg"
@@ -47,21 +78,39 @@ namespace eval logging {
         return "unknown"
     }
 
-    proc configure {flag {arg ""}} {
+    proc set_env_config {} {
+        variable start_time
+        variable verbose
+        msg -debug "propagating log config to environment"
+        set ::env(ME_LOG_START_CLOCK) $start_time
+        set ::env(ME_LOG_VERBOSE) $verbose
+    } 
+
+    proc configure args {
         variable verbose
         variable lvl_verb
-        switch -- $flag {
-            -verbose {
-                incr verbose
-            }
-            -quiet {
-                incr verbose -1
-            }
-            -level {
-                set verbose $lvl_verb($arg)
-            }
-            default {
-                error "unrecognized option $flag"
+        variable process
+        while {![lempty $args]} {
+            set flag [lshift args]
+            switch -- $flag {
+                -verbose {
+                    incr verbose
+                }
+                -quiet {
+                    incr verbose -1
+                }
+                -level {
+                    set verbose $lvl_verb([lshift args])
+                }
+                -process {
+                    set process [lshift args]
+                }
+                -propagate {
+                    set_env_config
+                }
+                default {
+                    error "unrecognized option $flag"
+                }
             }
         }
     }
@@ -104,7 +153,7 @@ namespace eval logging {
         ansi::with_out stderr {
             set msg [ansi::wrap {*}$args]
             set fmt_proc "fmt_$level"
-            puts stderr [$fmt_proc $msg]
+            puts stderr [prefix][$fmt_proc $msg]
         }
     }
 
