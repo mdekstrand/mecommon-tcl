@@ -1,14 +1,18 @@
 # TCL task runner
 package provide runner 0.1
 package require logging
+package require missing
 package require kvlookup
 package require ansifmt
 package require formats
 
 namespace eval runner {
     variable task_info
+    variable cli_tasks [list]
+    variable cli_mode dispatch
 }
 logging::ns_msg runner
+namespace eval runner::tasks {}
 
 proc runner::add_task {name deps body} {
     variable task_info
@@ -168,6 +172,70 @@ proc runner::list_tasks {tasks} {
             } else {
                 puts "[ansi::fmt -bold]$task[ansi::fmt -reset]: $desc"
             }
+        }
+    }
+}
+
+# parse command-line options for the runner, with optional extra options
+proc runner::parse_cli {argv {extra ""}} {
+    variable cli_spec
+    variable cli_argv $argv
+    set cli_spec {
+        -v - --verbose {
+            # increase logging verbosity
+            logging::config -verbose
+        }
+        -q - --quiet {
+            # suppress informational messages
+            logging::config -quiet
+        }
+    }
+    append cli_spec $extra
+    append cli_spec {
+        -l - --list {
+            # list available tasks
+            set ::runner::cli_mode list
+        }
+        --no-deps {
+            # run just the task, without its dependencies
+            set ::runner::cli_mode run_task
+        }
+
+        arglist {
+            # [TASK]...
+            if {![lempty $arg]} {
+                lappend ::runner::cli_tasks [lshift arg]
+            }
+            set ::runner::cli_argv $arg
+        }
+    }
+    # ugly hack to allow options intermixed with tasks
+    # run in uplevel in case the client code sets variables
+    uplevel {
+        while {![lempty $::runner::cli_argv]} {
+            getopt arg $::runner::cli_argv $::runner::cli_spec
+        }
+    }
+}
+
+# run the task list set up by parsing the CLI options
+proc runner::run_cli {} {
+    variable cli_mode
+    variable cli_tasks
+    switch -- $cli_mode {
+        dispatch -
+        single {
+            if {[lempty $cli_tasks]} {
+                msg "no task specified, running build"
+                set cli_tasks build
+            }
+            runner::$cli_mode $cli_tasks
+        }
+        list {
+            runner::list_tasks $cli_tasks
+        }
+        default {
+            error "invalid mode $cli_mode"
         }
     }
 }
