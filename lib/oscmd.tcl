@@ -75,6 +75,7 @@ proc oscmd::run args {
     set out @stdout
     set done 0
     set fail_action error
+    set bg 0
     while {!$done} {
         set arg [lpeek $args]
         switch -- $arg {
@@ -93,6 +94,10 @@ proc oscmd::run args {
             -cwd {
                 lshift args
                 set cwd [lshift args]
+            }
+            -bg {
+                lshift args
+                set bg 1
             }
             default {
                 set done 1
@@ -115,8 +120,12 @@ proc oscmd::run args {
     foreach arg $args {
         msg -trace "arg: $arg"
     }
+    set bgargs {}
+    if {$bg} {
+        lappend bgargs &
+    }
     set status [catch {
-        exec {*}$args >$out 2>@stderr
+        exec {*}$args >$out 2>@stderr {*}$bgargs
     } retval retopts]
     if {[info exists cwd]} {
         msg -debug "restoring working directory"
@@ -140,7 +149,7 @@ proc oscmd::run args {
         return {*}$retopts $retval
     } else {
         msg -debug "[lpeek $args] exec" -fg green ok
-        return 0
+        return $retval
     }
 }
 

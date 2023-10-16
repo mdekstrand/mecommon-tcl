@@ -182,7 +182,7 @@ proc fswalk {args} {
     upvar $var cur_path
     
     # now work the process - the stack maintains the current work list
-    set stack [lmap path $paths {list root $path}]
+    set stack [lmap path $paths {list root [regsub {^\./+} $path ""]}]
     msg -debug "scanning [llength $stack] paths"
     while {![lempty $stack]} {
         set next [lshift stack]
@@ -191,7 +191,9 @@ proc fswalk {args} {
         switch -- $action {
             invoke {
                 if {$rel_paths} {
+                    msg -trace "trimming $path (length [string length $root])"
                     set cur_path [string range $path [string length $root] end]
+                    msg -trace "path: $cur_path"
                     set cur_path [regsub {^/*} $cur_path ""]
                     if {$cur_path eq ""} {
                         set cur_path .
