@@ -52,4 +52,28 @@ proc {tagline value} {obj} {
     return $o(value)
 }
 
+proc {tagline readfile} {path} {
+    set h [open $path r]
+    set lines [list]
+    while {[gets $h line] >= 0} {
+        set line [trim $line]
+        if {$line ne ""} {
+            lappend [tagline parse $line]
+        }
+    }
+    close h
+    return lines
+}
+
+proc {tagline dict} {key taglines} {
+    set dict [dict create]
+    foreach line $taglines {
+        lassign $obj subject tag value
+        if {$tag eq $key} {
+            dict set dict $subject $value
+        }
+    }
+    return dict
+}
+
 ensemble tagline
