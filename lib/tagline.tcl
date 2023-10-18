@@ -73,7 +73,7 @@ proc {tagline dict} {key taglines} {
             dict set dict $subject $value
         }
     }
-    return dict
+    return $dict
 }
 
 ensemble tagline
