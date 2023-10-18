@@ -56,7 +56,7 @@ proc {tagline readfile} {path} {
     set h [open $path r]
     set lines [list]
     while {[gets $h line] >= 0} {
-        set line [trim $line]
+        set line [string trim $line]
         if {$line ne ""} {
             lappend [tagline parse $line]
         }
