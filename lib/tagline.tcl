@@ -61,7 +61,7 @@ proc {tagline readfile} {path} {
             lappend [tagline parse $line]
         }
     }
-    close h
+    close $h
     return lines
 }
 
