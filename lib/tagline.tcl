@@ -68,7 +68,7 @@ proc {tagline readfile} {path} {
 proc {tagline dict} {key taglines} {
     set dict [dict create]
     foreach line $taglines {
-        lassign $obj subject tag value
+        lassign $line subject tag value
         if {$tag eq $key} {
             dict set dict $subject $value
         }
