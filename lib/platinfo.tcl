@@ -159,6 +159,9 @@ namespace eval ::plat {
                     # msys2 is both windows and unix
                     set result [expr {$result && [flavor] in {unix msys2}}]
                 }
+                linux {
+                    set result [expr {$result && [os] eq "linux"}]
+                }
                 mac {
                     set result [expr {$result && [os] eq "darwin"}]
                 }
@@ -183,4 +186,5 @@ namespace eval ::plat {
     }
 
     namespace export tag os arch flavor is
+    namespace ensemble create
 }
