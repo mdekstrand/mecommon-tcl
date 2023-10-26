@@ -58,11 +58,11 @@ proc {tagline readfile} {path} {
     while {[gets $h line] >= 0} {
         set line [string trim $line]
         if {$line ne ""} {
-            lappend [tagline parse $line]
+            lappend lines [tagline parse $line]
         }
     }
     close $h
-    return lines
+    return $lines
 }
 
 proc {tagline dict} {key taglines} {
