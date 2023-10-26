@@ -4,48 +4,76 @@
 package provide tagline 0.1
 package require missing
 
-proc tagline {cmd args} {
-    switch -- $cmd {
-        parse {
-            set norm_sha 0
-            if {[lpeek $args] == "-norm-hash"} {
-                set norm_sha 1
-                lshift args
-            }
-            set line [lshift args]
-            if {![lempty $args]} {
-                error "too many arguments"
-            }
-            set line [string trim $line]
-            if {[regexp {^([A-Z0-9-]+)\s*\(([^)]+)\)\s*=\s*(.*)} $line -> tag subject value]} {
-                if {$norm_sha} {
-                    set tag [regsub {^SHA2-(\d+)} $tag {SHA\1}]
-                }
-                return [list $subject $tag $value]
-            } else {
-                error "invalid tagline: $line"
-            }
+proc {tagline parse} {args} {
+    set norm_sha 0
+    if {[lpeek $args] == "-norm-hash"} {
+        set norm_sha 1
+        lshift args
+    }
+    set line [lshift args]
+    if {![lempty $args]} {
+        error "too many arguments"
+    }
+    set line [string trim $line]
+    if {[regexp {^([A-Z0-9-]+)\s*\(([^)]+)\)\s*=\s*(.*)} $line -> tag subject value]} {
+        if {$norm_sha} {
+            set tag [regsub {^SHA2-(\d+)} $tag {SHA\1}]
         }
-        unparse {
-            if {[llength $args] == 1} {
-                set obj [lshift args]
-                lassign $obj subject tag value
-            } elseif {[llength $args] == 3} {
-                lassign $args subject tag value
-            } else {
-                error "incorrect number of arguments"
-            }
-            return "$tag ($subject) = $value"
-        }
-        subject -
-        tag -
-        value {
-            set obj [lshift args]
-            if {![lempty $args]} {
-                error "too many arguments"
-            }
-            lassign $obj o(subject) o(tag) o(value)
-            return $o($cmd)
-        }
+        return [list $subject $tag $value]
+    } else {
+        error "invalid tagline: $line"
     }
 }
+
+proc {tagline unparse} {args} {
+    if {[llength $args] == 1} {
+        set obj [lshift args]
+        lassign $obj subject tag value
+    } elseif {[llength $args] == 3} {
+        lassign $args subject tag value
+    } else {
+        error "incorrect number of arguments"
+    }
+    return "$tag ($subject) = $value"
+}
+
+proc {tagline subject} {obj} {
+    lassign $obj o(subject) o(tag) o(value)
+    return $o(subject)
+}
+
+proc {tagline tag} {obj} {
+    lassign $obj o(subject) o(tag) o(value)
+    return $o(tag)
+}
+
+proc {tagline value} {obj} {
+    lassign $obj o(subject) o(tag) o(value)
+    return $o(value)
+}
+
+proc {tagline readfile} {path} {
+    set h [open $path r]
+    set lines [list]
+    while {[gets $h line] >= 0} {
+        set line [string trim $line]
+        if {$line ne ""} {
+            lappend lines [tagline parse $line]
+        }
+    }
+    close $h
+    return $lines
+}
+
+proc {tagline dict} {key taglines} {
+    set dict [dict create]
+    foreach line $taglines {
+        lassign $line subject tag value
+        if {$tag eq $key} {
+            dict set dict $subject $value
+        }
+    }
+    return $dict
+}
+
+ensemble tagline

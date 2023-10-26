@@ -38,7 +38,7 @@ proc fcopy_macos {f1 f2} {
 
 proc fcopy_unix {f1 f2} {
     # use unix copy, defaults to clone on many modern systems
-    oscmd run cp $f1 $f2
+    oscmd run cp -f $f1 $f2
 }
 
 proc fcopy_tcl {f1 f2} {

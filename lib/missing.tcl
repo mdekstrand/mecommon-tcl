@@ -137,3 +137,9 @@ if {"exists" ni [info commands]} {
         }
     }
 }
+
+if {![exists -command alias]} {
+    proc alias {name args} {
+        interp alias {} $name {} {*}$args
+    }
+}
