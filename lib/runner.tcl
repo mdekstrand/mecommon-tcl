@@ -14,6 +14,11 @@ namespace eval runner {
 logging::ns_msg runner
 namespace eval runner::tasks {}
 
+proc runner::task_names {} {
+    variable task_info
+    return [lsort [array names task_info]]
+}
+
 proc runner::add_task {name deps body} {
     variable task_info
 
