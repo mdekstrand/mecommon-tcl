@@ -158,6 +158,7 @@ proc runner::list_tasks {tasks} {
     variable task_info
     if {[lempty $tasks]} {
         set tasks [array names task_info]
+        set tasks [lsort $tasks]
         msg "[llength $tasks] tasks defined"
     } else {
         msg "finding work order to build $tasks"
