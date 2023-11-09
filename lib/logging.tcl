@@ -6,6 +6,9 @@ namespace eval logging {
     namespace export msg
 
     variable verbose 0
+    if {[info exists ::env(ME_LOG_VERBOSE)]} {
+        set verbose $::env(ME_LOG_VERBOSE)
+    }
 
     variable lvl_verb
     set lvl_verb(trace) 2
@@ -43,7 +46,7 @@ namespace eval logging {
         if {[info exists process]} {
         append pfx "[ansi::fmt -fg yellow]$process[ansi::fmt -reset] "
         }
-        
+
         return $pfx
     }
 
@@ -84,7 +87,7 @@ namespace eval logging {
         msg -debug "propagating log config to environment"
         set ::env(ME_LOG_START_CLOCK) $start_time
         set ::env(ME_LOG_VERBOSE) $verbose
-    } 
+    }
 
     proc configure args {
         variable verbose
