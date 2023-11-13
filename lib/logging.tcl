@@ -19,31 +19,49 @@ namespace eval logging {
 
     variable process
     variable start_time [clock milliseconds]
+    variable global_start_time
 
-    proc elapsed {} {
-        variable start_time
+    if {[info exists ::env(ME_LOG_START_CLOCK)]} {
+        set global_start_time $::env(ME_LOG_START_CLOCK)
+    }
+
+    proc elapsed {base} {
         set time [clock milliseconds]
-        return [expr {($time - $start_time) / 1000.0}]
+        return [expr {($time - $base) / 1000.0}]
     }
 
     proc prefix {} {
         variable process
         variable start_time
-        set pfx ""
-        if {[info exists start_time]} {
-            set et [fmt duration [elapsed]]
+        variable global_start_time
+        set pfx "\["
+        set tcolor green
+        if {[info exists global_start_time]} {
+            set et [fmt duration [elapsed $global_start_time]]
             set nspace [expr {6 - [string length $et]}]
             if {$nspace > 0} {
                 set space [string repeat " " $nspace]
             } else {
                 set space ""
             }
-            append pfx "\[$space[ansi::fmt -fg green]$et[ansi::fmt -reset]\] "
+            append pfx "$space[ansi::fmt -fg green]$et[ansi::fmt -reset] / "
+            set tcolor blue
         }
+        if {[info exists start_time]} {
+            set et [fmt duration [elapsed $start_time]]
+            set nspace [expr {6 - [string length $et]}]
+            if {$nspace > 0} {
+                set space [string repeat " " $nspace]
+            } else {
+                set space ""
+            }
+            append pfx "$space[ansi::fmt -fg $tcolor]$et[ansi::fmt -reset]"
+        }
+        append pfx "\] "
         if {[info exists process]} {
         append pfx "[ansi::fmt -fg yellow]$process[ansi::fmt -reset] "
         }
-        
+
         return $pfx
     }
 
@@ -82,9 +100,11 @@ namespace eval logging {
         variable start_time
         variable verbose
         msg -debug "propagating log config to environment"
-        set ::env(ME_LOG_START_CLOCK) $start_time
+        if {![info exists ::env(ME_LOG_START_CLOCK)]} {
+            set ::env(ME_LOG_START_CLOCK) $start_time
+        }
         set ::env(ME_LOG_VERBOSE) $verbose
-    } 
+    }
 
     proc configure args {
         variable verbose
