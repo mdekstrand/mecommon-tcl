@@ -9,9 +9,12 @@
 # full path name of this file's directory.
 
 package ifneeded ansifmt 0.1 [list source [file join $dir ansifmt.tcl]]
+package ifneeded direnv 0.1 [list source [file join $dir direnv.tcl]]
 package ifneeded formats 0.1 [list source [file join $dir formats.tcl]]
 package ifneeded fsextra 0.1 [list source [file join $dir fsextra.tcl]]
 package ifneeded getopt 2008.12.07 [list source [file join $dir getopt.tcl]]
+package ifneeded json 0.1 [list source [file join $dir json.tcl]]
+package ifneeded jsonparse 1.0 [list source [file join $dir json-parser.tcl]]
 package ifneeded kvlookup 0.1 [list source [file join $dir kvlookup.tcl]]
 package ifneeded logging 0.1 [list source [file join $dir logging.tcl]]
 package ifneeded meuri 0.1 [list source [file join $dir meuri.tcl]]
