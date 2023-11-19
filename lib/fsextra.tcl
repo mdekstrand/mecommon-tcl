@@ -4,6 +4,8 @@ package require logging
 package require oscmd
 package require platinfo
 
+namespace eval fsextra {}
+
 proc fnewer {f1 f2} {
     if {![file exists $f2]} {
         return 1
@@ -12,7 +14,7 @@ proc fnewer {f1 f2} {
     set mt1 [file mtime $f1]
     set mt2 [file mtime $f2]
 
-    return $($mt1 > $mt2)
+    return [expr {$mt1 > $mt2}]
 }
 
 # get the age of a file
@@ -194,7 +196,7 @@ proc fswalk {args} {
 
     # alias the variable the body will need
     upvar $var cur_path
-    
+
     # now work the process - the stack maintains the current work list
     set stack [lmap path $paths {list root [regsub {^\./+} $path ""]}]
     msg -debug "scanning [llength $stack] paths"
