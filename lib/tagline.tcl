@@ -67,11 +67,11 @@ proc tagline::readfile {path} {
 }
 
 proc tagline::dict {key taglines} {
-    set dict [dict create]
+    set dict [::dict create]
     foreach line $taglines {
         lassign $line subject tag value
         if {$tag eq $key} {
-            dict set dict $subject $value
+            ::dict set dict $subject $value
         }
     }
     return $dict
