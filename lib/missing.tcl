@@ -142,7 +142,7 @@ if {"exists" ni [info commands]} {
 if {"env" ni [info commands]} {
     proc env {name args} {
         if {[info exists ::env($name)]} {
-            return ::env($name)
+            return $::env($name)
         } elseif {[llength $args] > 0} {
             lassign $args dft
             return $dft
