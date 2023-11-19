@@ -1,5 +1,6 @@
 package provide direnv 0.1
 package require logging
+package require json
 
 namespace eval direnv {
     proc apply {} {
@@ -9,7 +10,7 @@ namespace eval direnv {
             return
         }
         msg -trace "environment: $data"
-        set vars [json::decode $data]
+        set vars [parse_json $data]
         msg "applying directory environment"
         foreach {name value} $vars {
             msg -debug "setting env var $name"
