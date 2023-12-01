@@ -121,12 +121,14 @@ proc runner::run_task {name} {
 
     set start [clock milliseconds]
     msg "beginning task $name"
+    dict set task_info($name) started [expr {$start / 1000.0}]
     set status [catch {
         ::runner::tasks::$name
     } rv rvopts]
     set finish [clock milliseconds]
     set elapsed [expr {($finish - $start) / 1000.0}]
     dict set task_info($name) time $elapsed
+    dict set task_info($name) finished [expr {$finish / 1000.0}]
     if {$status} {
         msg -error task -fg white $name -fg red failed: -reset $rv
         return {*}$rvopts $rv
@@ -158,6 +160,46 @@ proc runner::dispatch {tasks} {
         }
     }
 }
+
+proc runner::_task_cmp_stime {a b} {
+    variable task_info
+    set t1 [dict get $task_info($a) started]
+    set t2 [dict get $task_info($b) started]
+    if {$t1 < $t2} {
+        return -1
+    } elseif {$t2 < $t1} {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+proc runner::save_task_timings {file} {
+    variable task_info
+    set finished_tasks [list]
+    foreach task [array names task_info] {
+        if {[dict exists $task_info($task) time]} {
+            lappend finished_tasks $task
+        }
+    }
+    set finished_tasks [lsort -command _task_cmp_stime $finished_tasks]
+
+    msg "saving perf data for [llength $finished_tasks] tasks to $file"
+    set fh [open $file w]
+    puts $fh "task,start,end,duration"
+    foreach task $finished_tasks {
+        set fields [subst {
+            $task
+            [dict get $task_info($task) started]
+            [dict get $task_info($task) finished]
+            [dict get $task_info($task) time]
+        }]
+        puts $fh [join $fields ,]
+    }
+    close $fh
+}
+
+
 
 proc runner::list_tasks {tasks} {
     variable task_info
