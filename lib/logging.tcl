@@ -7,6 +7,10 @@ namespace eval logging {
 
     variable verbose 0
 
+    variable log_file
+    variable lf_verbose
+    variable lf_handle
+
     variable lvl_verb
     set lvl_verb(trace) 2
     set lvl_verb(debug) 1
@@ -99,15 +103,24 @@ namespace eval logging {
     proc set_env_config {} {
         variable start_time
         variable verbose
+        variable log_file
+        variable lf_verbose
         msg -debug "propagating log config to environment"
         if {![info exists ::env(ME_LOG_START_CLOCK)]} {
             set ::env(ME_LOG_START_CLOCK) $start_time
         }
         set ::env(ME_LOG_VERBOSE) $verbose
+        if {[info exists log_file]} {
+            set ::env(ME_LOG_FILE) $log_file
+            set ::env(ME_LOG_FILE_VERBOSE) $lf_verbose
+        }
     }
 
     proc configure args {
         variable verbose
+        variable lf_verbose
+        variable log_file
+        variable lf_handle
         variable lvl_verb
         variable process
         while {![lempty $args]} {
@@ -121,6 +134,19 @@ namespace eval logging {
                 }
                 -level {
                     set verbose $lvl_verb([lshift args])
+                }
+                -file-verbose {
+                    if {![info exists lf_verbose]} {
+                        set lf_verbose $verbose
+                    }
+                    incr lf_verbose
+                }
+                -file-level {
+                    set lf_verbose $lvl_verb([lshift args])
+                }
+                -file {
+                    set log_file [lshift args]
+                    set lf_handle [open $log_file w]
                 }
                 -process {
                     set process [lshift args]
@@ -139,6 +165,8 @@ namespace eval logging {
         variable lvl_alias
         variable lvl_verb
         variable verbose
+        variable lf_handle
+        variable lf_verbose
 
         set level info
         set fmt ""
@@ -166,14 +194,23 @@ namespace eval logging {
             return -code error -errorcode bad-level "invalid logging level $level"
         }
 
-        if {$lvl_verb($level) > $verbose} {
-            return
+        if {$lvl_verb($level) <= $verbose} {
+            ansi::with_out stderr {
+                set msg [ansi::wrap {*}$args]
+                set fmt_proc "fmt_$level"
+                puts stderr [prefix][$fmt_proc $msg]
+            }
         }
 
-        ansi::with_out stderr {
-            set msg [ansi::wrap {*}$args]
-            set fmt_proc "fmt_$level"
-            puts stderr [prefix][$fmt_proc $msg]
+        if {![info exists lf_verbose]} {
+            set lf_verbose $verbose
+        }
+        if {[info exists lf_handle] && $lvl_verb($level) <= $lf_verbose} {
+            ansi::with_out $lf_handle {
+                set msg [ansi::wrap {*}$args]
+                set fmt_proc "fmt_$level"
+                puts $lf_handle [prefix][$fmt_proc $msg]
+            }
         }
     }
 
