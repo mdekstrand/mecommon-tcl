@@ -68,11 +68,21 @@ proc ::ansi::color_enabled {{h ""}} {
 
 # evaluate body assuming ansi is going to $out
 proc ::ansi::with_out {out body} {
+    return [_with_state [color_supported $out] $body]
+}
+
+# evaluate a body with color disabled
+proc ::ansi::nocolor {body} {
+    return [_with_state no $body]
+}
+
+# evaluate a body with a specified color enable/disable state
+proc ::ansi::_with_state {state body} {
     variable enabled
     set old $enabled
-    set enabled [color_supported $out]
+    set enabled $state
     set status [catch {
-        uplevel 1 $body
+        uplevel 2 $body
     } rv ropts]
     set enabled $old
     return {*}$ropts $rv

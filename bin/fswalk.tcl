@@ -10,6 +10,7 @@ package require getopt
 package require fsextra
 
 set walk_args [list]
+set exclude [list]
 
 getopt arg $argv {
     -v - --verbose {
@@ -30,8 +31,25 @@ getopt arg $argv {
         lappend walk_args -relative
     }
 
+    --exclude:PAT {
+        # exclude paths matching PAT
+        lappend exclude $arg
+    }
+
     arglist {
         set paths $arg
+    }
+}
+
+if {[llength $exclude]} {
+    lappend walk_args -filter {
+        set include 1
+        foreach pat $::exclude {
+            if {[string match $pat $path]} {
+                set include 0
+            }
+        }
+        set include
     }
 }
 

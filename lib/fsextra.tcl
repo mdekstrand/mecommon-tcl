@@ -4,6 +4,8 @@ package require logging
 package require oscmd
 package require platinfo
 
+namespace eval fsextra {}
+
 proc fnewer {f1 f2} {
     if {![file exists $f2]} {
         return 1
@@ -12,7 +14,7 @@ proc fnewer {f1 f2} {
     set mt1 [file mtime $f1]
     set mt2 [file mtime $f2]
 
-    return $($mt1 > $mt2)
+    return [expr {$mt1 > $mt2}]
 }
 
 # get the age of a file
@@ -71,6 +73,8 @@ proc fcopy {f1 f2} {
 proc fsmirror args {
     set live 1
     set delete 0
+    set delete_filtered 0
+    set filter_args [list]
     while {![lempty $args]} {
         set arg [lshift args]
         switch -- $arg {
@@ -79,6 +83,12 @@ proc fsmirror args {
             }
             -delete {
                 set delete 1
+            }
+            -delete-filtered {
+                set delete_filtered 1
+            }
+            -filter {
+                lappend filter_args -filter [lshift args]
             }
             -- {
                 break
@@ -102,7 +112,7 @@ proc fsmirror args {
     set copied [dict create]
     set ndirs 0
     set ncopies 0
-    fswalk -relative path $srcroot {
+    fswalk -relative {*}$filter_args path $srcroot {
         set src [file join $srcroot $path]
         set dst [file join $dstroot $path]
         if {[file isdirectory $src]} {
@@ -129,7 +139,10 @@ proc fsmirror args {
     # now we delete
     msg -debug "beginning delete pass"
     set ndeletes 0
-    fswalk -relative -dirs-last path $dstroot {
+    if {!$delete_filtered} {
+        set filter_args {}
+    }
+    fswalk -relative -dirs-last {*}$filter_args path $dstroot {
         if {![dict exists $copied $path]} {
             set dst [file join $dstroot $path]
             msg -debug "rm $path"
@@ -162,6 +175,9 @@ proc fswalk {args} {
             -relative {
                 set rel_paths 1
             }
+            -filter {
+                set filter [lshift args]
+            }
             -- {
                 break
             }
@@ -180,7 +196,7 @@ proc fswalk {args} {
 
     # alias the variable the body will need
     upvar $var cur_path
-    
+
     # now work the process - the stack maintains the current work list
     set stack [lmap path $paths {list root [regsub {^\./+} $path ""]}]
     msg -debug "scanning [llength $stack] paths"
@@ -201,7 +217,9 @@ proc fswalk {args} {
                 } else {
                     set cur_path $path
                 }
-                uplevel $body
+                if {![info exists filter] || [eval $filter]} {
+                    uplevel $body
+                }
             }
             root {
                 set root $path

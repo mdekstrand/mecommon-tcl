@@ -59,7 +59,7 @@ proc luniq {list} {
 }
 
 # lglob --
-# 
+#
 #   filter a list based on a glob
 proc lglob args {
     set invert 0
@@ -134,6 +134,20 @@ if {"exists" ni [info commands]} {
             default {
                 error "unknown mode"
             }
+        }
+    }
+}
+
+# Jim-compatible `env` procedure.
+if {"env" ni [info commands]} {
+    proc env {name args} {
+        if {[info exists ::env($name)]} {
+            return $::env($name)
+        } elseif {[llength $args] > 0} {
+            lassign $args dft
+            return $dft
+        } else {
+            error "unknown environment variable $env"
         }
     }
 }

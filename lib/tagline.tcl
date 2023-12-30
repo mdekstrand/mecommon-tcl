@@ -4,7 +4,8 @@
 package provide tagline 0.1
 package require missing
 
-proc {tagline parse} {args} {
+namespace eval tagline {}
+proc tagline::parse {args} {
     set norm_sha 0
     if {[lpeek $args] == "-norm-hash"} {
         set norm_sha 1
@@ -25,7 +26,7 @@ proc {tagline parse} {args} {
     }
 }
 
-proc {tagline unparse} {args} {
+proc tagline::unparse {args} {
     if {[llength $args] == 1} {
         set obj [lshift args]
         lassign $obj subject tag value
@@ -37,22 +38,22 @@ proc {tagline unparse} {args} {
     return "$tag ($subject) = $value"
 }
 
-proc {tagline subject} {obj} {
+proc tagline::subject {obj} {
     lassign $obj o(subject) o(tag) o(value)
     return $o(subject)
 }
 
-proc {tagline tag} {obj} {
+proc tagline::tag {obj} {
     lassign $obj o(subject) o(tag) o(value)
     return $o(tag)
 }
 
-proc {tagline value} {obj} {
+proc tagline::value {obj} {
     lassign $obj o(subject) o(tag) o(value)
     return $o(value)
 }
 
-proc {tagline readfile} {path} {
+proc tagline::readfile {path} {
     set h [open $path r]
     set lines [list]
     while {[gets $h line] >= 0} {
@@ -65,15 +66,19 @@ proc {tagline readfile} {path} {
     return $lines
 }
 
-proc {tagline dict} {key taglines} {
-    set dict [dict create]
+proc tagline::dict {key taglines} {
+    set dict [::dict create]
     foreach line $taglines {
         lassign $line subject tag value
         if {$tag eq $key} {
-            dict set dict $subject $value
+            ::dict set dict $subject $value
         }
     }
     return $dict
 }
 
-ensemble tagline
+namespace eval tagline {
+    namespace export parse unparse readfile
+    namespace export subject tag value dict
+    namespace ensemble create
+}
