@@ -24,7 +24,11 @@ proc fmt::duration {dur} {
     _dur_stage res dur m 60
 
     if {$dur} {
-        append res [format "%.2fs" $dur]
+        if {$res ne ""} {
+            append res [format "%.1fs" $dur]
+        } else {
+            append res [format "%.2fs" $dur]
+        }
     }
 
     return $res
