@@ -6,6 +6,9 @@ namespace eval logging {
     namespace export msg
 
     variable verbose 0
+    if {[info exists ::env(ME_LOG_VERBOSE)]} {
+        set verbose $::env(ME_LOG_VERBOSE)
+    }
 
     variable log_file
     variable lf_verbose
